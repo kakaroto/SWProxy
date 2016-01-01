@@ -1,0 +1,7 @@
+*~
+*.csv
+*.json
+*.sh
+*.pcap
+*.pyc
+smon_decryptor.py
