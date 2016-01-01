@@ -288,20 +288,12 @@ def parse_login_data(data):
         try:
             f.write(u"%s,%s,%s,%s,%s" %
                     (wizard['wizard_id'],
-                     wizard['wizard_name'],
+                     wizard['wizard_name'].encode('ascii', 'replace'),
                      wizard['wizard_crystal'],
                      wizard['wizard_mana'],
                      data['pvp_info']['arena_score']));
         except:
-            try:
-                f.write("%s,%s,%s,%s,%s" %
-                        (wizard['wizard_id'],
-                         "Couldn't get wizard name",
-                         wizard['wizard_crystal'],
-                         wizard['wizard_mana'],
-                         data['pvp_info']['arena_score']));
-            except:
-                pass
+            pass
         for i in inventory_map.keys():
             t = inventory_map[i]
             found = False
@@ -376,19 +368,27 @@ def parse_visit_data(data):
     friend = data['friend']
     monsters = friend['unit_list']
 
+    
     storage_id = None
+    wizard_id = 'unknown'
     for building in friend['building_list']:
+        wizard_id = building['wizard_id'] 
         if building['building_master_id'] == 25:
             storage_id = building['building_id']
             break
     monsters.sort(key = lambda mon: (1 if mon['building_id'] == storage_id else 0,
                                      6 - mon['class'], 40 - mon['unit_level'],
                                      mon['attribute'], mon['unit_id']))
-    with open("visit-" + str(friend['wizard_name']) +"-monsters.csv", "w") as fm:
-        fm.write("id,UID,name,level,Stars,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy\n")
+
+    with open("visit-" + str(wizard_id) + ".json", "w") as f:
+        f.write(json.dumps(data, indent=4))
+
+    with open("visit-" + str(wizard_id) +"-monsters.csv", "w") as fm:
+        fm.write("Wizard Name,id,UID,name,level,Stars,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy\n")
         for monster in monsters:
-            fm.write("%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s\n" %
-                     (monster['unit_id'],
+            fm.write(u"%s,%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s\n" %
+                     (friend['wizard_name'].encode('ascii', 'replace'),
+                      monster['unit_id'],
                       monster['unit_master_id'],
                       monster_name(monster['unit_master_id']),
                       monster['unit_level'],
