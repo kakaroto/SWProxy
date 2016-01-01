@@ -285,12 +285,23 @@ def parse_login_data(data):
         for name in inventory_map.keys():
             f.write(",%s" % name)
         f.write("\n")
-        f.write("%s,%s,%s,%s,%s" %
-                (wizard['wizard_id'],
-                 wizard['wizard_name'],
-                 wizard['wizard_crystal'],
-                 wizard['wizard_mana'],
-                 data['pvp_info']['arena_score']));
+        try:
+            f.write(u"%s,%s,%s,%s,%s" %
+                    (wizard['wizard_id'],
+                     wizard['wizard_name'],
+                     wizard['wizard_crystal'],
+                     wizard['wizard_mana'],
+                     data['pvp_info']['arena_score']));
+        except:
+            try:
+                f.write("%s,%s,%s,%s,%s" %
+                        (wizard['wizard_id'],
+                         "Couldn't get wizard name",
+                         wizard['wizard_crystal'],
+                         wizard['wizard_mana'],
+                         data['pvp_info']['arena_score']));
+            except:
+                pass
         for i in inventory_map.keys():
             t = inventory_map[i]
             found = False
