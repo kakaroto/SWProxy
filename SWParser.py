@@ -1,16 +1,13 @@
 #!/usr/bin/python
 
-from SWParser import parse_pcap, add_monster
+from SWParser import parse_pcap
 import sys
 
-VERSION = "0.91"
+VERSION = "0.92"
 
 if __name__ == "__main__":
     print "SWParser v%s - Summoners War Data Parser and Extractor" % VERSION
     print "\tWritten by KaKaRoTo\n\nLicensed under GPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser"
-    if len(sys.argv) == 3:
-        add_monster.add_monster(sys.argv[1], sys.argv[2])
-        sys.exit(0)
     if len(sys.argv) != 2:
         print "Usage :\n\t%s input.pcap" % (sys.argv[0])
         sys.exit(-1)

@@ -7,17 +7,7 @@ import dpkt
 import os
 from collections import OrderedDict
 from smon_decryptor import decrypt_request, decrypt_response
-from shipped_monsters import monsters_name_map
-
-sys.path.insert(0, os.getcwd())
-try:
-    from monsters import monsters_name_map as imported_map
-    if len(imported_map) > 0:
-        for id in imported_map.keys():
-            if len(imported_map[id]) > 0:
-                monsters_name_map[id] = imported_map[id]
-except:
-    pass
+from monsters import monsters_name_map
 
 def monster_name(uid, default_unknown="???", full=True):
     name_map = monsters_name_map
@@ -313,13 +303,11 @@ def parse_login_data(data):
                 f.write(",")
         f.write("\n")
 
-    monster_ids = []
     optimizer = {
         "runes": [],
         "mons": [],
         "savedBuilds": [],
     }
-    all_monsters = []
 
     with open(str(wizard['wizard_id']) + "-runes.csv", "w") as fr:
         fr.write("Rune id,Equipped to monster,Rune set,Stars,Slot No,level,Sell price,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
@@ -330,8 +318,6 @@ def parse_login_data(data):
         with open(str(wizard['wizard_id']) +"-monsters.csv", "w") as fm:
             fm.write("id,UID,name,level,Stars,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy\n")
             for monster in monsters:
-                monster_ids.append((str(monster['unit_master_id']), monster_name(monster['unit_master_id'], '', False)))
-                all_monsters.append(str(monster['unit_master_id'])[0:3])
                 fm.write("%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s\n" %
                          (monster['unit_id'],
                           monster['unit_master_id'],
@@ -373,54 +359,6 @@ def parse_login_data(data):
     with open(str(wizard['wizard_id']) +"-optimizer.json", "w") as f:
         f.write(json.dumps(optimizer))
 
-    all_monsters = list(set(all_monsters))
-    all_monsters.sort()
-    if "143" in all_monsters:
-        all_monsters.remove("143") # Rainbowmon
-    if "151" in all_monsters:
-        all_monsters.remove("151") # Devilmon
-    name_map = monsters_name_map
-    try:
-        import monsters
-        if len(monsters.monsters_name_map) > 0:
-            name_map = monsters.monsters_name_map
-    except:
-        pass
-    with open("monsters.py", "w") as f:
-        f.write("monsters_name_map = {\n")
-        for mon in all_monsters:
-            base = mon
-            water = mon + "11"
-            fire = mon + "12"
-            wind = mon + "13"
-            light = mon + "14"
-            dark = mon + "15"
-            f.write("    \"%s\": \"%s\",\n" % (base, name_map.get(base, "")))
-            f.write("    \"%s\": \"%s\",\n" % (water, name_map.get(water, "")))
-            f.write("    \"%s\": \"%s\",\n" % (fire, name_map.get(fire, "")))
-            f.write("    \"%s\": \"%s\",\n" % (wind, name_map.get(wind, "")))
-            f.write("    \"%s\": \"%s\",\n" % (light, name_map.get(light, "")))
-            f.write("    \"%s\": \"%s\",\n" % (dark, name_map.get(dark, "")))
-            f.write("\n")
-        f.write("    \"15105\": \"Devilmon\",\n")
-        f.write("    \"14314\": \"Rainbowmon\"\n")
-        f.write("}\n")
-    with open("update_mons.sh", "w") as f:
-        f.write("#!/bin/sh\n")
-        for mon in monster_ids:
-            id = mon[0]
-            name = mon[1]
-            if id != "15105" and str(id)[-2] == '0':
-                id = str(id)[0:3]
-            f.write("%s \"%s\" \"%s\"\n" % (sys.argv[0], id, name))
-    with open("update_mons.bat", "w") as f:
-        f.write("@echo off\n")
-        for mon in monster_ids:
-            id = mon[0]
-            name = mon[1]
-            if len(name) == 0 and str(id)[-2] == '0':
-                id = str(id)[0:3]
-            f.write("%s \"%s\" \"%s\"\n" % (sys.argv[0], id, name))
 
 
 def parse_visit_data(data):
@@ -435,11 +373,9 @@ def parse_visit_data(data):
     monsters.sort(key = lambda mon: (1 if mon['building_id'] == storage_id else 0,
                                      6 - mon['class'], 40 - mon['unit_level'],
                                      mon['attribute'], mon['unit_id']))
-    monster_ids = []
     with open("visit-" + str(friend['wizard_name']) +"-monsters.csv", "w") as fm:
         fm.write("id,UID,name,level,Stars,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy\n")
         for monster in monsters:
-            monster_ids.append((str(monster['unit_master_id']), monster_name(monster['unit_master_id'], '', False)))
             fm.write("%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s\n" %
                      (monster['unit_id'],
                       monster['unit_master_id'],
@@ -456,14 +392,6 @@ def parse_visit_data(data):
                       monster['critical_damage'],
                       monster['resist'],
                       monster['accuracy']))
-    with open("visit-" + str(friend['wizard_name']) + "-update_mons.sh", "w") as f:
-        f.write("#!/bin/sh\n")
-        for mon in monster_ids:
-            id = mon[0]
-            name = mon[1]
-            if id != "15105" and str(id)[-2] == '0':
-                id = str(id)[0:3]
-            f.write("./add_monster.py \"%s\" \"%s\"\n" % (id, name))
 
 def parse_pcap(filename):
     streams = dict() # Connections with current buffer
