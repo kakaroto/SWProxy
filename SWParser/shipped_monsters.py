@@ -706,6 +706,20 @@ monsters_name_map = {
     "20414": "Amarna",
     "20415": "Thebae",
 
+    "205": "Desert Queen",
+    "20511": "Bastet",
+    "20512": "Sekhmet",
+    "20513": "Hathor",
+    "20514": "Isis",
+    "20515": "Nephthys",
+
+    "206": "Horus",
+    "20511": "Qebehsenuef",
+    "20512": "Duamutef",
+    "20513": "Imesety",
+    "20514": "Wedjat",
+    "20515": "Amduat",
+
     "207": "Jack-o'-lantern",
     "20711": "Chilling",
     "20712": "Smokey",
