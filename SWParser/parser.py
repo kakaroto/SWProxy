@@ -474,9 +474,20 @@ def parse_pcap(filename):
             if eth.type != dpkt.ethernet.ETH_TYPE_IP:
                 continue
             ip = eth.data
+            if not isinstance(ip, dpkt.ip.IP):
+                try:
+                    ip = dpkt.ip.IP(ip)
+                except:
+                    continue
             if ip.p != dpkt.ip.IP_PROTO_TCP:
                 continue
             tcp = ip.data
+
+            if not isinstance(tcp, dpkt.tcp.TCP):
+                try:
+                    tcp = dpkt.tcp.TCP(tcp)
+                except:
+                    continue
 
             tupl = (ip.src, ip.dst, tcp.sport, tcp.dport)
             if tupl in streams:
