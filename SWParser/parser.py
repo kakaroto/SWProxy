@@ -407,7 +407,7 @@ def parse_login_data(data):
             name = mon[1]
             if id != "15105" and str(id)[-2] == '0':
                 id = str(id)[0:3]
-            f.write("./add_monster.py \"%s\" \"%s\"\n" % (id, name))
+            f.write("%s \"%s\" \"%s\"\n" % (sys.argv[0], id, name))
     with open("update_mons.bat", "w") as f:
         f.write("@echo off\n")
         for mon in monster_ids:
@@ -415,7 +415,7 @@ def parse_login_data(data):
             name = mon[1]
             if len(name) == 0 and str(id)[-2] == '0':
                 id = str(id)[0:3]
-            f.write("SWParser.exe \"%s\" \"%s\"\n" % (id, name))
+            f.write("%s \"%s\" \"%s\"\n" % (sys.argv[0], id, name))
 
 
 def parse_visit_data(data):

@@ -50,6 +50,10 @@ def add_monster(id, name):
         os.remove("monsters.pyc")
     except:
         pass
+    try:
+        os.remove("monsters.pyo")
+    except:
+        pass
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
