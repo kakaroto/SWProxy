@@ -3,7 +3,11 @@
 from SWParser import parse_pcap, add_monster
 import sys
 
+VERSION = "0.91"
+
 if __name__ == "__main__":
+    print "SWParser v%s - Summoners War Data Parser and Extractor" % VERSION
+    print "\tWritten by KaKaRoTo\n\nLicensed under GPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser"
     if len(sys.argv) == 3:
         add_monster.add_monster(sys.argv[1], sys.argv[2])
         sys.exit(0)
