@@ -246,6 +246,8 @@ def parse_login_data(data):
     inventory = data['inventory_info']
     monsters = data['unit_list']
     runes = data['runes']
+    if isinstance(runes, dict):
+        runes = runes.values()
 
     inventory_map = {
         "Unknown Scrolls": (9, 1),
@@ -359,7 +361,10 @@ def parse_login_data(data):
                                      "b_res":monster['resist'],
                                      "b_acc":monster['accuracy']}
                 optimizer['mons'].append(optimizer_monster)
-                for rune in monster['runes']:
+                monster_runes = monster['runes']
+                if isinstance(monster_runes, dict):
+                    monster_runes = monster_runes.values()
+                for rune in monster_runes:
                     optimizer_rune = write_rune(fr, rune, monster['unit_id'], monster['unit_master_id'])
                     optimizer_rune["monster_n"] = "%s%s" % (monster_name(monster['unit_master_id'], "Unknown name"),
                                                             " (In Storage)" if monster['building_id'] == storage_id else "")
