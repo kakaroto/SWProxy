@@ -218,7 +218,7 @@ monsters_name_map = {
 
     "132": "Howl",
     "13211": "Lulu",
-    "13212": "LaLa",
+    "13212": "Lala",
     "13213": "Chichi",
     "13214": "Shushu",
     "13215": "Chacha",
@@ -521,7 +521,7 @@ monsters_name_map = {
     "17811": "Kernodon",
     "17812": "Igmanodon",
     "17813": "Velfinodon",
-    "17814": "Gilnodon",
+    "17814": "Glinodon",
     "17815": "Devinodon",
 
     "179": "Hell Lady",
@@ -562,9 +562,9 @@ monsters_name_map = {
     "184": "Taoist",
     "18411": "Gildong",
     "18412": "Gunpyeong",
-    "18413": "woochi",
+    "18413": "Woochi",
     "18414": "Hwadam",
-    "18415": "Woonak",
+    "18415": "Woonhak",
 
     "185": "Beast Hunter",
     "18511": "Gangchun",
