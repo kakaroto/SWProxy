@@ -312,11 +312,30 @@ def parse_login_data(data):
         "mons": [],
         "savedBuilds": [],
     }
+    optimizer_rune_id = 1
+    optimizer_rune_id_mapping = {}
+    optimizer_monster_id = 1
+    optimizer_monster_id_mapping = {}
+
+    for rune in runes:
+        optimizer_rune_id_mapping[rune['rune_id']] = optimizer_rune_id
+        optimizer_rune_id = optimizer_rune_id + 1
+        
+    for monster in monsters:
+        optimizer_monster_id_mapping[monster['unit_id']] = optimizer_monster_id
+        optimizer_monster_id = optimizer_monster_id + 1
+        monster_runes = monster['runes']
+        if isinstance(monster_runes, dict):
+            monster_runes = monster_runes.values()
+        for rune in monster_runes:
+            optimizer_rune_id_mapping[rune['rune_id']] = optimizer_rune_id
+            optimizer_rune_id = optimizer_rune_id + 1
 
     with open(str(wizard['wizard_id']) + "-runes.csv", "w") as fr:
         fr.write("Rune id,Equipped to monster,Rune set,Stars,Slot No,level,Sell price,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
         for rune in runes:
             optimizer_rune = write_rune(fr, rune)
+            optimizer_rune['id'] = optimizer_rune_id_mapping[rune['rune_id']]
             optimizer['runes'].append(optimizer_rune)
 
         with open(str(wizard['wizard_id']) +"-monsters.csv", "w") as fm:
@@ -338,7 +357,7 @@ def parse_login_data(data):
                           monster['critical_damage'],
                           monster['resist'],
                           monster['accuracy']))
-                optimizer_monster = {"id":monster['unit_id'],
+                optimizer_monster = {"id": optimizer_monster_id_mapping[monster['unit_id']],
                                      "name":"%s%s" % (monster_name(monster['unit_master_id'], "Unknown name"),
                                                       " (In Storage)" if monster['building_id'] == storage_id else ""),
                                      "level":monster['unit_level'],
@@ -355,7 +374,8 @@ def parse_login_data(data):
                 if isinstance(monster_runes, dict):
                     monster_runes = monster_runes.values()
                 for rune in monster_runes:
-                    optimizer_rune = write_rune(fr, rune, monster['unit_id'], monster['unit_master_id'])
+                    optimizer_rune = write_rune(fr, rune, optimizer_monster_id_mapping[monster['unit_id']], monster['unit_master_id'])
+                    optimizer_rune['id'] = optimizer_rune_id_mapping[rune['rune_id']]
                     optimizer_rune["monster_n"] = "%s%s" % (monster_name(monster['unit_master_id'], "Unknown name"),
                                                             " (In Storage)" if monster['building_id'] == storage_id else "")
                     optimizer['runes'].append(optimizer_rune)
