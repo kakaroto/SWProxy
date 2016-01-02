@@ -714,11 +714,11 @@ monsters_name_map = {
     "20515": "Nephthys",
 
     "206": "Horus",
-    "20511": "Qebehsenuef",
-    "20512": "Duamutef",
-    "20513": "Imesety",
-    "20514": "Wedjat",
-    "20515": "Amduat",
+    "20611": "Qebehsenuef",
+    "20612": "Duamutef",
+    "20613": "Imesety",
+    "20614": "Wedjat",
+    "20615": "Amduat",
 
     "207": "Jack-o'-lantern",
     "20711": "Chilling",
