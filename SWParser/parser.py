@@ -10,18 +10,19 @@ from smon_decryptor import decrypt_request, decrypt_response
 from monsters import monsters_name_map
 
 def monster_name(uid, default_unknown="???", full=True):
+    uid = str(uid)
     name_map = monsters_name_map
 
-    if str(uid) in name_map and len(name_map[str(uid)]) > 0:
-        return name_map[str(uid)]
+    if uid in name_map and len(name_map[uid]) > 0:
+        return name_map[uid]
     else:
-        if str(uid)[0:3] in name_map and len(name_map[str(uid)[0:3]]) > 0:
-            attribute = int(str(uid)[-1])
-            awakened = int(str(uid)[-2])
+        if uid[0:3] in name_map and len(name_map[uid[0:3]]) > 0:
+            attribute = int(uid[-1])
+            awakened = int(uid[-2])
             if full:
-                return "%s%s (%s)" % ("AWAKENED " if awakened else "", name_map[str(uid)[0:3]], monster_attribute(attribute))
+                return "%s%s (%s)" % ("AWAKENED " if awakened else "", name_map[uid[0:3]], monster_attribute(attribute))
             elif not awakened:
-                return name_map[str(uid)[0:3]]
+                return name_map[uid[0:3]]
         return default_unknown
 
 def monster_attribute(attribute):
