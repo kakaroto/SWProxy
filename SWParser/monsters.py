@@ -303,7 +303,7 @@ monsters_name_map = {
     "145": "Phoenix",
     "14511": "Sigmarus",
     "14512": "Perna",
-    "14513": "teshar",
+    "14513": "Teshar",
     "14514": "Eludia",
     "14515": "Jaara",
 
