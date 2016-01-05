@@ -18,7 +18,7 @@ __homepage__ = 'https://github.com/abhinavsingh/proxy.py'
 __license__ = 'BSD'
 
 import sys
-import multiprocessing
+import threading
 import datetime
 import argparse
 import logging
@@ -323,7 +323,7 @@ class ProxyConnectionFailed(ProxyError):
     def __str__(self):
         return '<ProxyConnectionFailed - %s:%s - %s>' % (self.host, self.port, self.reason)
 
-class Proxy(multiprocessing.Process):
+class Proxy(threading.Thread):
     """HTTP proxy implementation.
     
     Accepts connection object and act as a proxy between client and server.
