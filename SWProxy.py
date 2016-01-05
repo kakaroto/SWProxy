@@ -18,7 +18,6 @@ class ProxyCallback(object):
     def __init__(self):
         self.host = None
         self.port = 0
-        self.method = None
         self.request = None
         self.response = None
 
@@ -26,16 +25,6 @@ class ProxyCallback(object):
         self.host = host
         self.port = port
         self.request = request
-        self.method = request.method
-        if host.startswith("summonerswar") and \
-           host.endswith("com2us.net") and \
-           request.url.path.startswith("/api/"):
-            try:
-                req_plain = decrypt_request(request.body)
-                req_json = json.loads(req_plain)
-                print "Found Summoners War API request : %s" % req_json['command']
-            except:
-                pass
 
     def onResponse(self, proxy, response):
         self.response = response
@@ -43,8 +32,11 @@ class ProxyCallback(object):
            self.host.endswith("com2us.net") and \
            self.request and self.request.url.path.startswith("/api/"):
             try:
+                req_plain = decrypt_request(self.request.body)
+                req_json = json.loads(req_plain)
                 resp_plain = decrypt_response(response.body)
                 resp_json = json.loads(resp_plain)
+                print "Found Summoners War API request : %s" % req_json['command']
                 if resp_json['command'] == 'HubUserLogin':
                     print "Monsters and Runes data generated"
                     parse_login_data(resp_json)
