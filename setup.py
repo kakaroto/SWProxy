@@ -15,5 +15,5 @@ setup(name='SWParser',
       url='https://github.com/kakaroto/SWParser',
       packages = ['SWParser'],
       options={"py2exe":{"optimize":2}},
-      console = ['SWParser.py'],
+      console = ['SWParser.py', 'SWProxy.py'],
      )

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import logging
-from SWParser import parse_pcap, parse_login_data, parse_visit_data
+from SWParser import parse_login_data, parse_visit_data
 from SWParser.smon_decryptor import decrypt_request, decrypt_response
 import json
 import proxy
