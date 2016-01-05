@@ -489,13 +489,13 @@ def parse_pcap(filename):
                     try:
                         request = dpkt.http.Request(requests)
                         #print request.method, request.uri
-                    except dpkt.UnpackError:
+                    except:
                         request = ''
                         requests = ''
                     try:
                         response = dpkt.http.Response(responses)
                         #print response.status
-                    except dpkt.UnpackError:
+                    except:
                         response = ''
                         responses = ''
                     requests = requests[len(request):]
