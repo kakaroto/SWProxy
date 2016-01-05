@@ -11,9 +11,6 @@ import sys
 VERSION = "0.94"
 logger = logging.getLogger(__name__)
 
-my_ip = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]][0]
-
-
 class ProxyCallback(object):
     def __init__(self):
         self.host = None
@@ -70,9 +67,12 @@ if __name__ == "__main__":
     print "\tWritten by KaKaRoTo\n\nLicensed under GPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser\n"
 
     logging.basicConfig(level="ERROR", format='%(levelname)s - %(message)s')
+    port = 8080 if len(sys.argv) < 2 else int(sys.argv[1])
+    my_ip = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]][0]
+
     try:
-        print "Running Proxy server at %s on port %s" % (my_ip, 8080)
-        p = HTTP(my_ip, 8080)
+        print "Running Proxy server at %s on port %s" % (my_ip, port)
+        p = HTTP(my_ip,  port)
         p.run()
     except KeyboardInterrupt:
         pass
