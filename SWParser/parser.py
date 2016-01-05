@@ -135,16 +135,25 @@ def rune_set_id(id):
         return "???"
 
 def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
-    f.write("%s,%s,%s,%s,%s,%s,%s,%s,%s" %
-            (rune_id,
-             "%s (%s)" % (monster_id, monster_name(monster_uid)) if monster_id != 0 else '0',
-             rune_set_id(rune['set_id']),
-             rune['class'],
-             rune['slot_no'],
-             rune['upgrade_curr'],
-             rune['sell_value'],
-             rune_effect(rune['pri_eff']),
-             rune_effect(rune['prefix_eff'])))
+    if rune_id == None:
+        f.write("%s,%s,%s,%s,%s,%s" %
+                (rune['slot_no'],
+                 rune_set_id(rune['set_id']),
+                 rune['class'],
+                 rune['upgrade_curr'],
+                 rune_effect(rune['pri_eff']),
+                 rune_effect(rune['prefix_eff'])))
+    else:
+        f.write("%s,%s,%s,%s,%s,%s,%s,%s,%s" %
+                (rune_id,
+                 "%s (%s)" % (monster_id, monster_name(monster_uid)) if monster_id != 0 else '0',
+                 rune_set_id(rune['set_id']),
+                 rune['class'],
+                 rune['slot_no'],
+                 rune['upgrade_curr'],
+                 rune['sell_value'],
+                 rune_effect(rune['pri_eff']),
+                 rune_effect(rune['prefix_eff'])))
     if len(rune['sec_eff']) >= 4:
         f.write(",%s,%s,%s,%s\n" %
                  (rune_effect(rune['sec_eff'][0]),
@@ -403,15 +412,13 @@ def parse_visit_data(data):
         f.write(json.dumps(data, indent=4))
 
     with open("visit-" + str(wizard_id) +"-monsters.csv", "w") as fm:
-        fm.write("Wizard Name,id,UID,name,level,Stars,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy\n")
+        fm.write("Wizard Name,name,Stars,Level,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy,Rune Slot No,Rune set,Stars,Level,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
         for monster in monsters:
-            fm.write(u"%s,%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s\n" %
+            fm.write(u"%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,,,,,,,,,,\n" %
                      (friend['wizard_name'].encode('ascii', 'replace'),
-                      monster['unit_id'],
-                      monster['unit_master_id'],
                       monster_name(monster['unit_master_id']),
-                      monster['unit_level'],
                       monster['class'],
+                      monster['unit_level'],
                       monster_attribute(monster['attribute']),
                       "Yes" if monster['building_id'] == storage_id else "No",
                       int(monster['con']) * 15,
@@ -422,6 +429,13 @@ def parse_visit_data(data):
                       monster['critical_damage'],
                       monster['resist'],
                       monster['accuracy']))
+            monster_runes = monster['runes']
+            if isinstance(monster_runes, dict):
+                monster_runes = monster_runes.values()
+            monster_runes.sort(key = lambda r: r['slot_no'])
+            for rune in monster_runes:
+                fm.write(u",,,,,,,,,,,,,,")
+                write_rune(fm, rune, None)
 
 def parse_pcap(filename):
     streams = dict() # Connections with current buffer
