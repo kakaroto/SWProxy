@@ -225,6 +225,7 @@ class HttpParser(object):
         
         if not del_headers: del_headers = []
         del_headers.append(b'content-length')
+        del_headers.append(b'transfer-encoding')
         for k in self.headers:
             if not k in del_headers:
                 req += self.build_header(self.headers[k][0], self.headers[k][1])
@@ -411,7 +412,7 @@ class Proxy(multiprocessing.Process):
                 if self.callback:
                     self.callback.onResponse(self, self.response)
                 # queue data for client
-                self.client.queue(self.response.build())
+                self.client.queue(self.response.raw)
         else:
             # queue data for client
             self.client.queue(data)
