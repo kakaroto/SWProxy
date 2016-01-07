@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from SWParser import parse_login_data, parse_visit_data
+from SWParser import parse_login_data, parse_visit_data, parse_visit_datav2
 from SWParser.smon_decryptor import decrypt_request, decrypt_response
 import sys
 import dpkt
@@ -85,6 +85,7 @@ def parse_pcap(filename):
                                 parse_login_data(resp_json)
                             elif resp_json['command'] == 'VisitFriend':
                                 parse_visit_data(resp_json)
+                                parse_visit_datav2(resp_json)
                         except:
                             import traceback
                             e = sys.exc_info()[0]
