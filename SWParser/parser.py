@@ -289,6 +289,14 @@ def parse_login_data(data):
     with open(str(wizard['wizard_id']) + ".json", "w") as f:
         f.write(json.dumps(data, indent=4))
 
+    with open(str(wizard['wizard_id']) + "-swarfarm.json", "w") as f:
+        f.write(json.dumps({
+            'inventory_info': inventory,
+            'unit_list': monsters,
+            'runes': runes,
+            'building_list': data['building_list'],
+        }))
+
     with open(str(wizard['wizard_id']) + "-info.csv", "w") as f:
         f.write("Wizard id,Wizard Name,Crystals,Mana,Arena score")
         for name in inventory_map.keys():
