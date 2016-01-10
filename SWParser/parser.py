@@ -147,8 +147,8 @@ def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
                 (rune_id,
                  "%s (%s)" % (monster_id, monster_name(monster_uid)) if monster_id != 0 else '0',
                  rune_set_id(rune['set_id']),
-                 rune['class'],
                  rune['slot_no'],
+                 rune['class'],
                  rune['upgrade_curr'],
                  rune['sell_value'],
                  rune_effect(rune['pri_eff']),
@@ -361,7 +361,7 @@ def parse_login_data(data):
             rune_id = rune_id + 1
 
     with open(str(wizard['wizard_id']) + "-runes.csv", "w") as fr:
-        fr.write("Rune id,Equipped to monster,Rune set,Stars,Slot No,level,Sell price,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
+        fr.write("Rune id,Equipped to monster,Rune set,Slot No,Stars,level,Sell price,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
         for rune in runes:
             optimizer_rune = write_rune(fr, rune, rune_id_mapping[rune['rune_id']])
             optimizer['runes'].append(optimizer_rune)
