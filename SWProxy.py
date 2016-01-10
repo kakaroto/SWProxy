@@ -34,7 +34,7 @@ class ProxyCallback(object):
                 resp_plain = decrypt_response(response.body)
                 resp_json = json.loads(resp_plain)
                 print "Found Summoners War API request : %s" % req_json['command']
-                if resp_json['command'] == 'HubUserLogin':
+                if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
                     print "Monsters and Runes data generated"
                     parse_login_data(resp_json)
                 elif resp_json['command'] == 'VisitFriend':
@@ -43,7 +43,6 @@ class ProxyCallback(object):
                 elif resp_json['command'] == 'GetUnitCollection':
                     collection = resp_json['collection']
                     print "Your collection has %d/%d monsters" % (sum([y['open'] for y in collection]), len(collection))
-
             except:
                 pass
     def onDone(self, proxy):

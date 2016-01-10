@@ -81,7 +81,7 @@ def parse_pcap(filename):
                             resp_plain = decrypt_response(response.body)
                             req_json = json.loads(req_plain)
                             resp_json = json.loads(resp_plain)
-                            if resp_json['command'] == 'HubUserLogin':
+                            if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
                                 parse_login_data(resp_json)
                             elif resp_json['command'] == 'VisitFriend':
                                 parse_visit_data(resp_json)
