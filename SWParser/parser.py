@@ -299,6 +299,8 @@ def parse_login_data(data):
                                      6 - mon['class'], 40 - mon['unit_level'], mon['attribute'],
                                      1 - ((mon['unit_master_id'] / 10) % 10), mon['unit_id']))
 
+    runes.sort(key = lambda r: (r['set_id'], r['slot_no']))
+
     with open(str(wizard['wizard_id']) + ".json", "w") as f:
         f.write(json.dumps(data, indent=4))
 
@@ -356,6 +358,7 @@ def parse_login_data(data):
         monster_runes = monster['runes']
         if isinstance(monster_runes, dict):
             monster_runes = monster_runes.values()
+        monster_runes.sort(key = lambda r: r['slot_no'])
         for rune in monster_runes:
             rune_id_mapping[rune['rune_id']] = rune_id
             rune_id = rune_id + 1
@@ -400,6 +403,7 @@ def parse_login_data(data):
                 monster_runes = monster['runes']
                 if isinstance(monster_runes, dict):
                     monster_runes = monster_runes.values()
+                monster_runes.sort(key = lambda r: r['slot_no'])
                 for rune in monster_runes:
                     optimizer_rune = write_rune(fr, rune, rune_id_mapping[rune['rune_id']],
                                                 monster_id_mapping[monster['unit_id']], monster['unit_master_id'])
