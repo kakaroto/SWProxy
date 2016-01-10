@@ -8,7 +8,7 @@ import proxy
 import socket
 import sys
 
-VERSION = "0.94"
+VERSION = "0.95"
 logger = logging.getLogger(__name__)
 
 class ProxyCallback(object):
