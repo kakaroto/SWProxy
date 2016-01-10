@@ -241,10 +241,23 @@ def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
             "sub_crate": sub_crate}
 
 def parse_login_data(data):
-    wizard = data['wizard_info']
-    inventory = data['inventory_info']
-    monsters = data['unit_list']
-    runes = data['runes']
+    try:
+        wizard = data['wizard_info']
+    except:
+        wizard = {'wizard_id': 0}
+    try:
+        inventory = data['inventory_info']
+    except:
+        inventory = []
+    try:
+        monsters = data['unit_list']
+    except:
+        monsters = []
+    try:
+        runes = data['runes']
+    except:
+        runes = []
+
     if isinstance(runes, dict):
         runes = runes.values()
 
