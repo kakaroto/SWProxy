@@ -38,3 +38,55 @@ You can visit friends (or people from chat, or arena rankings, etc..) and the sc
 ## Optimizer data
 The optimizer.json file can be directly loaded on the Rune Optimizer app available here : http://www.graphactory.eu/sw/
 Simply open the file with a text editor and copy/paste the data into the import section of the web app and press Import.
+
+--
+
+## Installing and using it (MAC):
+
+Download the repo's zip and extract in the folder of your choice in your Mac. Open Terminal and browse your folder.
+Make sure you have python installed by running `python --version`. It should print something like `Python 2.7.9`. If you don't have, install it with Brew.
+Install pycrypto by doing the following command: `sudo -H pip install pycrypto`. It should appear the following message:
+
+ 	Collecting pycrypto
+	  Downloading pycrypto-2.6.1.tar.gz (446kB)
+	    100% |████████████████████████████████| 446kB 873kB/s 
+	Installing collected packages: pycrypto
+	  Running setup.py install for pycrypto
+	Successfully installed pycrypto-2.6.1
+
+Now run `setup.py install` to install SWParser. It should appear the following message:
+
+	/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/lib/python2.7/distutils/dist.py:267: UserWarning: Unknown distribution option: 'console'
+	  warnings.warn(msg)
+	running install
+	running build
+	running build_py
+	creating build
+	creating build/lib
+	creating build/lib/SWParser
+	copying SWParser/__init__.py -> build/lib/SWParser
+	copying SWParser/monsters.py -> build/lib/SWParser
+	copying SWParser/parser.py -> build/lib/SWParser
+	copying SWParser/setup.py -> build/lib/SWParser
+	running install_lib
+	creating /usr/local/lib/python2.7/site-packages/SWParser
+	copying build/lib/SWParser/__init__.py -> /usr/local/lib/python2.7/site-packages/SWParser
+	copying build/lib/SWParser/monsters.py -> /usr/local/lib/python2.7/site-packages/SWParser
+	copying build/lib/SWParser/parser.py -> /usr/local/lib/python2.7/site-packages/SWParser
+	copying build/lib/SWParser/setup.py -> /usr/local/lib/python2.7/site-packages/SWParser
+	byte-compiling /usr/local/lib/python2.7/site-packages/SWParser/__init__.py to __init__.pyc
+	byte-compiling /usr/local/lib/python2.7/site-packages/SWParser/monsters.py to monsters.pyc
+	byte-compiling /usr/local/lib/python2.7/site-packages/SWParser/parser.py to parser.pyc
+	byte-compiling /usr/local/lib/python2.7/site-packages/SWParser/setup.py to setup.pyc
+	running install_egg_info
+	Writing /usr/local/lib/python2.7/site-packages/SWParser-1.0-py2.7.egg-info
+	
+Now to start proxy, run the following command: `SWProxy.py`. If by any chance you get `ImportError: No module named Crypto.Cipher`, run `python SWProxy.py` instead. If all went fine, you should see the following message:
+
+	SWParser v0.95 - Summoners War Proxy
+		Written by KaKaRoTo
+
+	Licensed under GPLv3 and available at : 
+		https://github.com/kakaroto/SWParser
+
+	Running Proxy server at 192.168.0.78 on port 8080
