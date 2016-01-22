@@ -209,6 +209,7 @@ def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
         elif rune_effect_type(sec_eff[0]) == "CRate":
             sub_crate = sec_eff[1] + sec_eff[3]
     return {"id": rune_id,
+            "unique_id": rune['rune_id'],
             "monster": monster_id,
             "monster_n":monster_name(monster_uid, "Unknown name"),
             "set": rune_set_id(rune['set_id']),
@@ -353,7 +354,7 @@ def parse_login_data(data):
     for rune in runes:
         rune_id_mapping[rune['rune_id']] = rune_id
         rune_id = rune_id + 1
-        
+
     monster_id = 1
     for monster in monsters:
         monster_id_mapping[monster['unit_id']] = monster_id
@@ -423,11 +424,11 @@ def parse_visit_data(data):
     friend = data['friend']
     monsters = friend['unit_list']
 
-    
+
     storage_id = None
     wizard_id = 'unknown'
     for building in friend['building_list']:
-        wizard_id = building['wizard_id'] 
+        wizard_id = building['wizard_id']
         if building['building_master_id'] == 25:
             storage_id = building['building_id']
             break
