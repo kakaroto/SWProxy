@@ -311,6 +311,7 @@ def parse_login_data(data):
             'unit_list': monsters,
             'runes': runes,
             'building_list': data['building_list'],
+            'deco_list': data['deco_list'],
             'wizard': wizard,
             'unit_lock_list': data['unit_lock_list'],
             'helper_list': data['helper_list'],
