@@ -2,7 +2,7 @@
 
 This tool will parse data captured from the initial Summoners War login data and extract information on the monsters and runes of the user.
 
-This tool was created with a single purpose: Exporting the runes so it can be used with external tools, such as the Rune Optimizer by Redeemer40 available here : http://www.graphactory.eu/sw/
+This tool was created with a single purpose: Exporting the runes so it can be used with external tools, such as the Rune Optimizer by Redeemer40 available here : http://swrunes.all.my/
 
 ## SWProxy
 The easiest and safest method is to use the SWProxy application which will run a small proxy server on your machine. You will then need to set the proxy settings in your Android or IOS device to the IP and Port displayed by SWProxy and wait for the data to appear.
@@ -36,7 +36,7 @@ The monsters listed for a visited friend are in the same order as his box as wel
 You can visit friends (or people from chat, or arena rankings, etc..) and the script will create a visit-<name>-monsters.csv file with all of their monsters and their equipped runes. Note that their monsters that are in storage will also be visible in the CSV file even though the game doesn't show them.
 
 ## Optimizer data
-The optimizer.json file can be directly loaded on the Rune Optimizer app available here : http://www.graphactory.eu/sw/
+The optimizer.json file can be directly loaded on the Rune Optimizer app available here : http://swrunes.all.my/
 Simply open the file with a text editor and copy/paste the data into the import section of the web app and press Import.
 
 --
