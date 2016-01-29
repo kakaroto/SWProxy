@@ -4,6 +4,7 @@ import json
 import sys
 import struct
 import os
+import codecs
 from collections import OrderedDict
 from smon_decryptor import decrypt_request, decrypt_response
 from monsters import monsters_name_map
@@ -317,7 +318,7 @@ def parse_login_data(data):
             'helper_list': data['helper_list'],
         }))
 
-    with open(str(wizard['wizard_id']) + "-info.csv", "w") as f:
+    with codecs.open(str(wizard['wizard_id']) + "-info.csv", "w", "u32") as f:
         f.write("Wizard id,Wizard Name,Crystals,Mana,Arena score")
         for name in inventory_map.keys():
             f.write(",%s" % name)
@@ -325,7 +326,7 @@ def parse_login_data(data):
         try:
             f.write(u"%s,%s,%s,%s,%s" %
                     (wizard['wizard_id'],
-                     wizard['wizard_name'].encode('ascii', 'replace'),
+                     wizard['wizard_name'],
                      wizard['wizard_crystal'],
                      wizard['wizard_mana'],
                      data['pvp_info']['arena_score']));
@@ -443,11 +444,11 @@ def parse_visit_data(data):
     with open("visit-" + str(wizard_id) + ".json", "w") as f:
         f.write(json.dumps(data, indent=4))
 
-    with open("visit-" + str(wizard_id) +"-monsters.csv", "w") as fm:
+    with codecs.open("visit-" + str(wizard_id) +"-monsters.csv", "w", "u32") as fm:
         fm.write("Wizard Name,name,Stars,Level,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy,Rune Slot No,Rune set,Stars,Level,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
         for monster in monsters:
             fm.write(u"%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,,,,,,,,,,\n" %
-                     (friend['wizard_name'].encode('ascii', 'replace'),
+                     (friend['wizard_name'],
                       monster_name(monster['unit_master_id']),
                       monster['class'],
                       monster['unit_level'],
