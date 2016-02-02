@@ -6,7 +6,7 @@ import sys
 import dpkt
 import json
 
-VERSION = "0.96"
+VERSION = "0.97"
 
 def parse_pcap(filename):
     streams = dict() # Connections with current buffer
