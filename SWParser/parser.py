@@ -134,6 +134,23 @@ def rune_set_id(id):
     else:
         return "???"
 
+def rune_efficiency(rune):
+    sum = 0
+    for eff in [rune['prefix_eff']] + rune['sec_eff']:
+        typ = eff[0]
+        value = eff[1]
+        max = 0
+        if typ in [2, 4, 6, 11, 12]:
+            max = 40.0
+        elif typ == 8 or typ == 9:
+            max = 30.0
+        elif typ == 10:
+            max = 35.0
+        if max > 0:
+            sum += (value / max)
+    sum += 1 if rune['class'] == 6 else 0.85
+    return sum / 2.8
+
 def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
     if rune_id == None:
         f.write("%s,%s,%s,%s,%s,%s" %
@@ -155,26 +172,28 @@ def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
                  rune_effect(rune['pri_eff']),
                  rune_effect(rune['prefix_eff'])))
     if len(rune['sec_eff']) >= 4:
-        f.write(",%s,%s,%s,%s\n" %
+        f.write(",%s,%s,%s,%s" %
                  (rune_effect(rune['sec_eff'][0]),
                   rune_effect(rune['sec_eff'][1]),
                   rune_effect(rune['sec_eff'][2]),
                   rune_effect(rune['sec_eff'][3])))
     elif len(rune['sec_eff']) == 3:
-        f.write(",%s,%s,%s,\n" %
+        f.write(",%s,%s,%s," %
                  (rune_effect(rune['sec_eff'][0]),
                   rune_effect(rune['sec_eff'][1]),
                   rune_effect(rune['sec_eff'][2])))
     elif len(rune['sec_eff']) == 2:
-        f.write(",%s,%s,,\n" %
+        f.write(",%s,%s,," %
                  (rune_effect(rune['sec_eff'][0]),
                   rune_effect(rune['sec_eff'][1])))
     elif len(rune['sec_eff']) == 1:
-        f.write(",%s,,,\n" %
+        f.write(",%s,,," %
                  (rune_effect(rune['sec_eff'][0])))
     else:
-        f.write(",,,,\n")
+        f.write(",,,,")
 
+    f.write(",%.2f %%\n" % (rune_efficiency(rune) * 100))
+    
     sub_atkf = "-"
     sub_atkp = "-"
     sub_hpf = "-"
@@ -370,7 +389,7 @@ def parse_login_data(data):
             rune_id = rune_id + 1
 
     with open(str(wizard['wizard_id']) + "-runes.csv", "w") as fr:
-        fr.write("Rune id,Equipped to monster,Rune set,Slot No,Stars,level,Sell price,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
+        fr.write("Rune id,Equipped to monster,Rune set,Slot No,Stars,level,Sell price,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat,Barion's Rune Efficiency\n")
         for rune in runes:
             optimizer_rune = write_rune(fr, rune, rune_id_mapping[rune['rune_id']])
             optimizer['runes'].append(optimizer_rune)
@@ -445,7 +464,7 @@ def parse_visit_data(data):
         f.write(json.dumps(data, indent=4))
 
     with codecs.open("visit-" + str(wizard_id) +"-monsters.csv", "w", "u32") as fm:
-        fm.write("Wizard Name,name,Stars,Level,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy,Rune Slot No,Rune set,Stars,Level,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat\n")
+        fm.write("Wizard Name,name,Stars,Level,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy,Rune Slot No,Rune set,Stars,Level,Primary effect,Prefix effect,First Substat,Second Substat,Third Substat,Fourth Substat,Barion's Rune Efficiency\n")
         for monster in monsters:
             fm.write(u"%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,,,,,,,,,,\n" %
                      (friend['wizard_name'],
