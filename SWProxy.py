@@ -46,11 +46,12 @@ class ProxyCallback(object):
                 resp_plain = decrypt_response(response.body)
                 resp_json = json.loads(resp_plain)
 
-                try:
-                    for plugin in ProxyCallback.plugins:
+                for plugin in ProxyCallback.plugins:
+                    try:
                         plugin.plugin_object.process_request(req_json, resp_json)
-                except Exception as e:
-                    logger.exception('Exception while executing a plugin: %s' % e)
+                    except Exception as e:
+                        logger.exception('Exception while executing plugin "%s": %s' \
+                                         % (plugin.plugin_object.__class__.__name__, e))
                     pass
 
                 if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
