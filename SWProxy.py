@@ -3,7 +3,9 @@
 import logging
 from SWParser import parse_login_data, parse_visit_data
 from SWParser.smon_decryptor import decrypt_request, decrypt_response
+from yapsy.PluginManager import PluginManager
 import json
+import os
 import proxy
 import socket
 import sys
@@ -11,7 +13,17 @@ import sys
 VERSION = "0.97"
 logger = logging.getLogger(__name__)
 
+
+def initialize_yapsy_plugins():
+    manager = PluginManager()
+    manager.setPluginPlaces([os.getcwd() + os.sep + "plugins"])
+    manager.collectPlugins()
+    return manager.getAllPlugins()
+
+
 class ProxyCallback(object):
+    plugins = initialize_yapsy_plugins()
+
     def __init__(self):
         self.host = None
         self.port = 0
@@ -33,7 +45,15 @@ class ProxyCallback(object):
                 req_json = json.loads(req_plain)
                 resp_plain = decrypt_response(response.body)
                 resp_json = json.loads(resp_plain)
-                print "Found Summoners War API request : %s" % req_json['command']
+
+                for plugin in ProxyCallback.plugins:
+                    try:
+                        plugin.plugin_object.process_request(req_json, resp_json)
+                    except Exception as e:
+                        logger.exception('Exception while executing plugin "%s": %s' \
+                                         % (plugin.plugin_object.__class__.__name__, e))
+                    pass
+
                 if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
                     print "Monsters and Runes data generated"
                     parse_login_data(resp_json)
