@@ -8,6 +8,7 @@ import codecs
 from collections import OrderedDict
 from smon_decryptor import decrypt_request, decrypt_response
 from monsters import monsters_name_map
+from dozens import rune_addition, get_rune_sets
 
 def monster_name(uid, default_unknown="???", full=True):
     uid = str(uid)
@@ -488,3 +489,67 @@ def parse_visit_data(data):
             for rune in monster_runes:
                 fm.write(u",,,,,,,,,,,,,,")
                 write_rune(fm, rune, None)
+
+def parse_visit_datav2(data):
+    friend = data['friend']
+    monsters = friend['unit_list']
+
+    storage_id = None
+    wizard_id = 'unknown'
+    for building in friend['building_list']:
+        wizard_id = building['wizard_id'] 
+        if building['building_master_id'] == 25:
+            storage_id = building['building_id']
+            break
+    monsters.sort(key = lambda mon: (1 if mon['building_id'] == storage_id else 0,
+                                     6 - mon['class'], 40 - mon['unit_level'],
+                                     mon['attribute'], mon['unit_id']))
+
+    with open("visit_v2-" + str(wizard_id) +"-monsters.csv", "w") as fm:
+        fm.write("Wizard Name,name,Stars,Level,Attribute,In Storage,hp,atk,def,spd,cri rate, cri dmg, resistance, accuracy,Energy, Guard,Swift,Blade,Rage,Focus,Endure,Fatal,Despair,Vampire,Violent,Nemesis,Will,Shield,Revenge,Destory\n")
+        for monster in monsters:
+            monster_runes = monster['runes']
+            if isinstance(monster_runes, dict):
+                monster_runes = monster_runes.values()
+            rune_sets = get_rune_sets(monster_runes)
+#            if len(monster_runes) > 0:
+#                print "monster: ", monster
+#            if monster_name(monster['unit_master_id']) == 'Ryan' or monster_name(monster['unit_master_id']) == 'Hwa' or monster_name(monster['unit_master_id']) == 'Ahman':
+#                print monster_name(monster['unit_master_id']), ": ", monster
+            fm.write(u"%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" %
+                     (friend['wizard_name'].encode('ascii', 'replace'),
+                      monster_name(monster['unit_master_id']),
+                      monster['class'],
+                      monster['unit_level'],
+                      monster_attribute(monster['attribute']),
+                      "Yes" if monster['building_id'] == storage_id else "No",
+                      (int(monster['con']) * 15) + rune_addition(monster_runes, 'con', monster['con']*15) + int(rune_sets[0] * .15 * monster['con'] * 15),
+                      monster['atk'] + rune_addition(monster_runes, 'atk', monster['atk']) + int(rune_sets[7] * .35 * monster['atk']),
+                      monster['def'] + rune_addition(monster_runes, 'def', monster['def']) + int(rune_sets[1] * .15 * monster['def']),
+                      monster['spd'] + rune_addition(monster_runes, 'spd', monster['spd']) + int(rune_sets[2] * .25 * monster['spd']),
+                      monster['critical_rate'] + rune_addition(monster_runes, 'critical_rate', monster['critical_rate']) + (rune_sets[3] * 12),
+                      monster['critical_damage'] + rune_addition(monster_runes, 'critical_damage', monster['critical_damage']) + (rune_sets[4] * 40),
+                      monster['resist'] + rune_addition(monster_runes, 'resist', monster['resist']) + (rune_sets[6] * 20),
+                      monster['accuracy'] + rune_addition(monster_runes, 'accuracy', monster['accuracy']) + (rune_sets[5] * 20),
+                      rune_sets[0],
+                      rune_sets[1],
+                      rune_sets[2],
+                      rune_sets[3],
+                      rune_sets[4],
+                      rune_sets[5],
+                      rune_sets[6],
+                      rune_sets[7],
+                      rune_sets[9],
+                      rune_sets[10],
+                      rune_sets[12],
+                      rune_sets[13],
+                      rune_sets[14],
+                      rune_sets[15],
+                      rune_sets[16],
+                      rune_sets[17],                      
+                      ))
+#            if monster_name(monster['unit_master_id']) == 'Ryan' or monster_name(monster['unit_master_id']) == 'Hwa' or monster_name(monster['unit_master_id']) == 'Ahman':
+#                print "------------------------"
+    
+                
+                
