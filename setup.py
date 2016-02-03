@@ -6,6 +6,7 @@ try:
 except:
     pass
 
+plugins = [('plugins', ['plugins/DemoPlugin.py', 'plugins/DemoPlugin.yapsy-plugin'])]
 
 setup(name='SWParser',
       version='1.0',
@@ -16,4 +17,5 @@ setup(name='SWParser',
       packages = ['SWParser'],
       options={"py2exe":{"optimize":2}},
       console = ['SWParser.py', 'SWProxy.py'],
+      data_files=plugins,
      )

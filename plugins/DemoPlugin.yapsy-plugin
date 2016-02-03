@@ -1,0 +1,7 @@
+[Core]
+Name = Demo Plugin
+Module = DemoPlugin
+
+[Documentation]
+Version = 0.1
+Description = Print SW API requests command name
