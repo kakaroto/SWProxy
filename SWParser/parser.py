@@ -5,6 +5,7 @@ import json
 import cStringIO
 import sys
 import struct
+import numbers
 import os
 import codecs
 from collections import OrderedDict
@@ -13,15 +14,17 @@ from monsters import monsters_name_map
 
 # ref: http://stackoverflow.com/a/5838817/1020222
 class DictUnicodeWriter(object):
-    def __init__(self, f, fieldnames, dialect=csv.excel, encoding="utf-8", **kwds):
+    def __init__(self, f, fieldnames, dialect=csv.excel, encoding="utf-8", newfile=True, **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
         self.writer = csv.DictWriter(self.queue, fieldnames, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
+        if newfile:
+            self.writebom()
 
     def writerow(self, D):
-        self.writer.writerow({k:str(v).encode("utf-8") for k,v in D.items()})
+        self.writer.writerow({k:v.encode("utf-8") if not isinstance(v, numbers.Number) else str(v).encode("utf-8") for k,v in D.items()})
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
@@ -357,31 +360,37 @@ def parse_login_data(data):
             'helper_list': data['helper_list'],
         }))
 
-    with codecs.open(str(wizard['wizard_id']) + "-info.csv", "w", "u32") as f:
-        f.write("Wizard id,Wizard Name,Crystals,Mana,Arena score")
+    with open(str(wizard['wizard_id']) + "-info.csv", "wb") as wizard_file:
+        wizard_fields = ['id','name','crystal','mana','arena']
+
+        wizard_headers = {'id': 'Wizard id', 'name': 'Wizard Name', 'crystal': 'Crystals', 'mana': 'Mana',
+                   'arena': 'Arena score'}
+
         for name in inventory_map.keys():
-            f.write(",%s" % name)
-        f.write("\n")
-        try:
-            f.write(u"%s,%s,%s,%s,%s" %
-                    (wizard['wizard_id'],
-                     wizard['wizard_name'],
-                     wizard['wizard_crystal'],
-                     wizard['wizard_mana'],
-                     data['pvp_info']['arena_score']));
-        except:
-            pass
+            wizard_fields.append(name)
+            wizard_headers[name] = name
+
+        # TODO: call plugins to extend fieldnames and headers
+
+        wizard_writter = DictUnicodeWriter(wizard_file, fieldnames=wizard_fields)
+        wizard_writter.writerow(wizard_headers)
+
+        wizard_data = {'id': wizard['wizard_id'],
+                       'name': wizard['wizard_name'],
+                       'crystal': wizard['wizard_crystal'],
+                       'mana': wizard['wizard_mana'],
+                       'arena': data['pvp_info']['arena_score']
+                       }
+
         for i in inventory_map.keys():
             t = inventory_map[i]
-            found = False
             for item in inventory:
                 if item['item_master_type'] == t[0] and item['item_master_id'] == t[1]:
-                    f.write(",%s" % item['item_quantity'])
-                    found = True
-                    break
-            if not found:
-                f.write(",")
-        f.write("\n")
+                    wizard_data[i] = item['item_quantity']
+
+        # TODO: call plugins to extend row
+
+        wizard_writter.writerow(wizard_data)
 
     optimizer = {
         "runes": [],
@@ -421,7 +430,6 @@ def parse_login_data(data):
         # TODO: call-plugins to extend fields and headers
 
         rune_writer = DictUnicodeWriter(rune_file, fieldnames=rune_fieldnames)
-        rune_writer.writebom()
         rune_writer.writerow(runes_header)
 
         for rune in runes:
@@ -445,7 +453,6 @@ def parse_login_data(data):
             # TODO: call plugins to extend fieldnames and headers
 
             monster_writer = DictUnicodeWriter(monster_file, fieldnames=monster_fieldnames)
-            monster_writer.writebom()
             monster_writer.writerow(monster_header)
 
             for monster in monsters:
@@ -461,11 +468,15 @@ def parse_login_data(data):
                     monster_runes = monster_runes.values()
                 monster_runes.sort(key = lambda r: r['slot_no'])
                 for rune in monster_runes:
-                    optimizer_rune, _ = map_rune(rune, rune_id_mapping[rune['rune_id']],
+                    optimizer_rune, csv_rune = map_rune(rune, rune_id_mapping[rune['rune_id']],
                                                 monster_id_mapping[monster['unit_id']], monster['unit_master_id'])
                     optimizer_rune["monster_n"] = "%s%s" % (monster_name(monster['unit_master_id'], "Unknown name"),
                                                             " (In Storage)" if monster['building_id'] == storage_id else "")
                     optimizer['runes'].append(optimizer_rune)
+
+                    # TODO: call plugins to extend row
+
+                    rune_writer.writerow(csv_rune)
 
     with open(str(wizard['wizard_id']) +"-optimizer.json", "w") as f:
         f.write(json.dumps(optimizer))
@@ -533,7 +544,7 @@ def parse_visit_data(data):
     with open("visit-" + str(wizard_id) + ".json", "w") as f:
         f.write(json.dumps(data, indent=4))
 
-    with codecs.open("visit-" + str(wizard_id) +"-monsters.csv", "wb") as visit_file:
+    with open("visit-" + str(wizard_id) +"-monsters.csv", "wb") as visit_file:
         visit_fieldnames = ['wizard_name', 'name', 'grade', 'level', 'attribute', 'in_storage', 'hp', 'atk', 'hp',
                             'def', 'spd', 'crate', 'cdmg', 'res', 'acc', 'slot', 'rune_set','rune_grade','rune_level',
                             'pri_eff','pre_eff','sub1','sub2','sub3','sub4','barion']
@@ -550,7 +561,6 @@ def parse_visit_data(data):
         # TODO: call-plugins to extend fields and headers
 
         visit_writer = DictUnicodeWriter(visit_file, fieldnames=visit_fieldnames)
-        visit_writer.writebom()
         visit_writer.writerow(visit_header)
 
         for monster in monsters:
