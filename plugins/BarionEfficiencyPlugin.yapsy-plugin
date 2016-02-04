@@ -1,0 +1,7 @@
+[Core]
+Name = Barion Rune Efficiency Plugin
+Module = BarionEfficiencyPlugin
+
+[Documentation]
+Version = 0.1
+Description = Apply Barion's rune efficiency formula to runes

@@ -1,6 +1,5 @@
-from yapsy.IPlugin import IPlugin
+import SWPlugin
 
-
-class DemoPlugin(IPlugin):
+class DemoPlugin(SWPlugin.SWPlugin):
     def process_request(self, req_json, resp_json):
         print "Found Summoners War API request : %s" % req_json['command']

@@ -172,24 +172,6 @@ def rune_set_id(id):
     else:
         return "???"
 
-def rune_efficiency(rune):
-    sum = 0
-    for eff in [rune['prefix_eff']] + rune['sec_eff']:
-        typ = eff[0]
-        value = eff[1]
-        max = 0
-        if typ in [2, 4, 6, 11, 12]:
-            max = 40.0
-        elif typ == 8 or typ == 9:
-            max = 30.0
-        elif typ == 10:
-            max = 35.0
-        if max > 0:
-            sum += (value / max)
-    sum += 1 if rune['class'] == 6 else 0.85
-    return sum / 2.8
-
-
 def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     cvs_map ={
         'slot': rune['slot_no'],
@@ -209,8 +191,6 @@ def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
 
     for i in range(0, len(rune['sec_eff'])):
         cvs_map['sub' + str(i + 1)] = rune_effect(rune['sec_eff'][i])
-
-    cvs_map['barion'] = "%.2f %%" % (rune_efficiency(rune) * 100)
 
     sub_atkf = "-"
     sub_atkp = "-"
@@ -284,7 +264,7 @@ def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     return optimizer_map, cvs_map
 
 
-def parse_login_data(data):
+def parse_login_data(data, plugins=[]):
     try:
         wizard = data['wizard_info']
     except:
@@ -370,7 +350,8 @@ def parse_login_data(data):
             wizard_fields.append(name)
             wizard_headers[name] = name
 
-        # TODO: call plugins to extend fieldnames and headers
+        for plugin in plugins:
+            plugin.plugin_object.process_csv_row('wizard', 'header', (wizard_fields, wizard_headers))
 
         wizard_writter = DictUnicodeWriter(wizard_file, fieldnames=wizard_fields)
         wizard_writter.writerow(wizard_headers)
@@ -388,7 +369,8 @@ def parse_login_data(data):
                 if item['item_master_type'] == t[0] and item['item_master_id'] == t[1]:
                     wizard_data[i] = item['item_quantity']
 
-        # TODO: call plugins to extend row
+        for plugin in plugins:
+            plugin.plugin_object.process_csv_row('wizard', 'wizard', (wizard, wizard_data))
 
         wizard_writter.writerow(wizard_data)
 
@@ -419,15 +401,16 @@ def parse_login_data(data):
 
     with open(str(wizard['wizard_id']) + "-runes.csv", "wb") as rune_file:
         rune_fieldnames = ['rune_id','monster_id','rune_set','slot','rune_grade','rune_level','sell_price','pri_eff'
-            ,'pre_eff','sub1','sub2','sub3','sub4','barion']
+            ,'pre_eff','sub1','sub2','sub3','sub4']
 
         runes_header = {'rune_id': 'Rune id','monster_id': 'Equipped to monster', 'rune_set': 'Rune set', 'slot': 'Slot No',
                   'rune_grade': 'Stars', 'rune_level': 'level', 'sell_price': 'Sell Price', 'pri_eff': 'Primary effect',
                   'pre_eff': 'Prefix effect', 'sub1': 'First Substat', 'sub2': 'Second Substat', 'sub3': 'Third Substat',
-                  'sub4': 'Fourth Substat', 'barion': "Barion's Rune Efficiency"
+                  'sub4': 'Fourth Substat'
                   }
 
-        # TODO: call-plugins to extend fields and headers
+        for plugin in plugins:
+            plugin.plugin_object.process_csv_row('runes', 'header', (rune_fieldnames, runes_header))
 
         rune_writer = DictUnicodeWriter(rune_file, fieldnames=rune_fieldnames)
         rune_writer.writerow(runes_header)
@@ -435,7 +418,8 @@ def parse_login_data(data):
         for rune in runes:
             optimizer_rune, csv_rune = map_rune(rune, rune_id_mapping[rune['rune_id']])
 
-            # TODO: call plugin to extend row
+            for plugin in plugins:
+                plugin.plugin_object.process_csv_row('runes', 'rune', (rune, csv_rune))
 
             optimizer['runes'].append(optimizer_rune)
             rune_writer.writerow(csv_rune)
@@ -450,7 +434,8 @@ def parse_login_data(data):
                               'def': 'def', 'spd': 'spd', 'crate':'cri rate', 'cdmg': 'cri dmg', 'res': 'resistance',
                               'acc': 'accuracy'}
 
-            # TODO: call plugins to extend fieldnames and headers
+            for plugin in plugins:
+                plugin.plugin_object.process_csv_row('monster', 'header', (monster_fieldnames, monster_header))
 
             monster_writer = DictUnicodeWriter(monster_file, fieldnames=monster_fieldnames)
             monster_writer.writerow(monster_header)
@@ -458,7 +443,8 @@ def parse_login_data(data):
             for monster in monsters:
                 optimizer_monster, csv_monster = map_monster(monster, monster_id_mapping, storage_id)
 
-                # TODO: call plugins to extend row
+                for plugin in plugins:
+                    plugin.plugin_object.process_csv_row('monster', 'monster', (monster, csv_monster))
 
                 monster_writer.writerow(csv_monster)
 
@@ -474,7 +460,8 @@ def parse_login_data(data):
                                                             " (In Storage)" if monster['building_id'] == storage_id else "")
                     optimizer['runes'].append(optimizer_rune)
 
-                    # TODO: call plugins to extend row
+                    for plugin in plugins:
+                        plugin.plugin_object.process_csv_row('runes', 'rune', (rune, csv_rune))
 
                     rune_writer.writerow(csv_rune)
 
@@ -526,7 +513,7 @@ def map_monster(monster, monster_id_mapping, storage_id, wizard_name=None):
     return optimizer_monster, csv_map
 
 
-def parse_visit_data(data):
+def parse_visit_data(data, plugins=[]):
     friend = data['friend']
     monsters = friend['unit_list']
 
@@ -547,7 +534,7 @@ def parse_visit_data(data):
     with open("visit-" + str(wizard_id) +"-monsters.csv", "wb") as visit_file:
         visit_fieldnames = ['wizard_name', 'name', 'grade', 'level', 'attribute', 'in_storage', 'hp', 'atk', 'hp',
                             'def', 'spd', 'crate', 'cdmg', 'res', 'acc', 'slot', 'rune_set','rune_grade','rune_level',
-                            'pri_eff','pre_eff','sub1','sub2','sub3','sub4','barion']
+                            'pri_eff','pre_eff','sub1','sub2','sub3','sub4']
 
         visit_header = {'wizard_name': 'Wizard Name','name': 'Name','level': 'Level','grade': 'Stars',
                         'attribute': 'Attribute','in_storage': 'In Storage','hp' : 'hp', 'atk': 'atk', 'def': 'def',
@@ -555,10 +542,10 @@ def parse_visit_data(data):
                         'rune_set': 'Rune set', 'slot': 'Slot No', 'rune_grade': 'Stars', 'rune_level': 'level',
                         'pri_eff': 'Primary effect', 'pre_eff': 'Prefix effect', 'sub1': 'First Substat',
                         'sub2': 'Second Substat', 'sub3': 'Third Substat', 'sub4': 'Fourth Substat',
-                        'barion': "Barion's Rune Efficiency"
                         }
 
-        # TODO: call-plugins to extend fields and headers
+        for plugin in plugins:
+            plugin.plugin_object.process_csv_row('visit', 'header', (visit_fieldnames, visit_header))
 
         visit_writer = DictUnicodeWriter(visit_file, fieldnames=visit_fieldnames)
         visit_writer.writerow(visit_header)
@@ -566,7 +553,8 @@ def parse_visit_data(data):
         for monster in monsters:
             _, monster_csv =  map_monster(monster, None, storage_id, friend['wizard_name'])
 
-            # TODO: call plugins to extend row (monster row)
+            for plugin in plugins:
+                plugin.plugin_object.process_csv_row('visit', 'monster', (monster, monster_csv))
 
             visit_writer.writerow(monster_csv)
 
@@ -577,6 +565,7 @@ def parse_visit_data(data):
             for rune in monster_runes:
                 _, rune_map = map_rune(rune, None)
 
-                # TODO: call plugins to extend row (rune)
+                for plugin in plugins:
+                    plugin.plugin_object.process_csv_row('visit', 'rune', (rune, rune_map))
 
                 visit_writer.writerow(rune_map)

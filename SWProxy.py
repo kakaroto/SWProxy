@@ -56,10 +56,10 @@ class ProxyCallback(object):
                         logger.exception('Exception while executing plugin "%s": %s' \
                                          % (plugin.plugin_object.__class__.__name__, e))
                 if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
-                    parse_login_data(resp_json)
+                    parse_login_data(resp_json, ProxyCallback.plugins)
                     print "Monsters and Runes data generated"
                 elif resp_json['command'] == 'VisitFriend':
-                    parse_visit_data(resp_json)
+                    parse_visit_data(resp_json, ProxyCallback.plugins)
                     print "Visit Friend data generated"
                 elif resp_json['command'] == 'GetUnitCollection':
                     collection = resp_json['collection']
