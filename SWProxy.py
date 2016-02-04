@@ -46,20 +46,21 @@ class ProxyCallback(object):
                 resp_plain = decrypt_response(response.body)
                 resp_json = json.loads(resp_plain)
 
+                if 'command' not in resp_json:
+                    return
+
                 for plugin in ProxyCallback.plugins:
                     try:
-                        plugin.plugin_object.process_request(req_json, resp_json)
+                        plugin.plugin_object.process_request(req_json, resp_json, ProxyCallback.plugins)
                     except Exception as e:
                         logger.exception('Exception while executing plugin "%s": %s' \
                                          % (plugin.plugin_object.__class__.__name__, e))
-                    pass
-
                 if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
+                    parse_login_data(resp_json, ProxyCallback.plugins)
                     print "Monsters and Runes data generated"
-                    parse_login_data(resp_json)
                 elif resp_json['command'] == 'VisitFriend':
+                    parse_visit_data(resp_json, ProxyCallback.plugins)
                     print "Visit Friend data generated"
-                    parse_visit_data(resp_json)
                 elif resp_json['command'] == 'GetUnitCollection':
                     collection = resp_json['collection']
                     print "Your collection has %d/%d monsters" % (sum([y['open'] for y in collection]), len(collection))
