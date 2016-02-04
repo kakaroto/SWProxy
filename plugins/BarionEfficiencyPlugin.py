@@ -1,18 +1,5 @@
 import SWPlugin
 
-class BarionEfficiencyPlugin(SWPlugin.SWPlugin):
-    def process_csv_row(self, csv_type, data_type, data):
-        if csv_type not in ['monsters', 'visit', 'runes']:
-            return
-
-        if data_type == 'header':
-            ids, headers = data
-            ids.append('barion')
-            headers['barion'] = "Barion's Rune Efficiency"
-            return
-        if data_type == 'rune':
-            rune, row = data
-            row['barion'] = "%.2f %%" % (rune_efficiency(rune) * 100)
 
 def rune_efficiency(rune):
     sum = 0
@@ -30,3 +17,18 @@ def rune_efficiency(rune):
             sum += (value / max)
     sum += 1 if rune['class'] == 6 else 0.85
     return sum / 2.8
+
+class BarionEfficiencyPlugin(SWPlugin.SWPlugin):
+    def process_csv_row(self, csv_type, data_type, data):
+        if csv_type not in ['visit', 'runes']:
+            return
+
+        if data_type == 'header':
+            ids, headers = data
+            ids.append('barion')
+            headers['barion'] = "Barion's Rune Efficiency"
+            return
+        if data_type == 'rune':
+            rune, row = data
+            row['barion'] = "%.2f %%" % (rune_efficiency(rune) * 100)
+

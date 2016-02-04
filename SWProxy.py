@@ -51,7 +51,7 @@ class ProxyCallback(object):
 
                 for plugin in ProxyCallback.plugins:
                     try:
-                        plugin.plugin_object.process_request(req_json, resp_json)
+                        plugin.plugin_object.process_request(req_json, resp_json, ProxyCallback.plugins)
                     except Exception as e:
                         logger.exception('Exception while executing plugin "%s": %s' \
                                          % (plugin.plugin_object.__class__.__name__, e))
