@@ -84,7 +84,7 @@ class HTTP(proxy.TCP):
 
 if __name__ == "__main__":
     print "SWParser v%s - Summoners War Proxy" % VERSION
-    print "\tWritten by KaKaRoTo\n\nLicensed under GPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser\n"
+    print "\tWritten by KaKaRoTo\n\nLicensed under LGPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser\n"
 
     logging.basicConfig(level="ERROR", format='%(levelname)s - %(message)s')
     port = 8080 if len(sys.argv) < 2 else int(sys.argv[1])
