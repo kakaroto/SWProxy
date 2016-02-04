@@ -38,11 +38,23 @@ You can visit friends (or people from chat, or arena rankings, etc..) and the sc
 The optimizer.json file can be directly loaded on the Rune Optimizer app available here : http://swrunes.all.my/
 Simply open the file with a text editor and copy/paste the data into the import section of the web app and press Import.
 
+## Using it on Linux:
+All you need to run it is the following dependencies :
+
+* Python 2.x
+ * pycrypto
+ * dpkt
+ * yapsy
+
+You can install python with your package manager and the python dependencies as well, or you can install the python dependencies with :
+
+```sudo pip install pycrypto dpkt yapsy```
+
 ## Using it on a MAC:
 
-Download the repository's zip and extract in the folder of your choice in your Mac. Open Terminal and browse your folder.
+Download the latest release source code from here https://github.com/kakaroto/SWParser/releases/latest and extract it in the folder of your choice in your Mac. Open Terminal and browse your folder.
 Make sure you have python installed by running `python --version`. It should print something like `Python 2.7.9`.
-Install pycrypto by doing the following command: `sudo -H pip install pycrypto`. It should showthe following message:
+Install pycrypto by doing the following command: `sudo -H pip install pycrypto dpkt yapsy`. It will ask you to enter your password in order to install the pycrypto dependency. Once you do, it should show a message similar to this :
 
  	Collecting pycrypto
 	  Downloading pycrypto-2.6.1.tar.gz (446kB)
@@ -51,14 +63,14 @@ Install pycrypto by doing the following command: `sudo -H pip install pycrypto`.
 	  Running setup.py install for pycrypto
 	Successfully installed pycrypto-2.6.1
 
-If you do not have the 'pip' command installed, use 'sudo -H easy_install pycrypto' to install pycrypto.
+If you do not have the 'pip' command installed, use 'sudo -H easy_install pycrypt dpkt yapsyo' to install pycrypto.
 
 Now you should be able to start the proxy. Simply run the following command: `python SWProxy.py`. If all went fine, you should see the following message:
 
 	SWParser v0.95 - Summoners War Proxy
 		Written by KaKaRoTo
 
-	Licensed under GPLv3 and available at : 
+	Licensed under LGPLv3 and available at : 
 		https://github.com/kakaroto/SWParser
 
 	Running Proxy server at 192.168.x.y on port 8080
