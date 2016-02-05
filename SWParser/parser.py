@@ -78,24 +78,29 @@ def monster_attribute(attribute):
         return attribute
 
 
-def rune_effect_type(typ):
+def rune_effect_type(id, mode=0):
+    """mode 0 = rune optimizer, mode 1 = csv export"""
+
+    if mode != 0 and mode != 1:
+        raise ValueError('Should be 0 (optimizer) or 1 (csv)')
+
     effect_type_map = {
-        0: "",
-        1: "HP flat",
-        2: "HP%",
-        3: "ATK flat",
-        4: "ATK%",
-        5: "DEF flat",
-        6: "DEF%",
+        0: ("",""),
+        1: ("HP flat", "HP +%s"),
+        2: ("HP%", "HP %s%%"),
+        3: ("ATK flat", "ATK +%s"),
+        4: ("ATK%", "ATK %s%%"),
+        5: ("DEF flat", "DEF +%s"),
+        6: ("DEF%", "DEF %s%%"),
         # 7: "UNKNOWN",  # ?
-        8: "SPD",
-        9: "CRate",
-        10: "CDmg",
-        11: "RES",
-        12: "ACC"
+        8: ("SPD", "SPD +%s"),
+        9: ("CRate", "CRI Rate %s%%"),
+        10: ("CDmg", "CRI Dmg %s%%"),
+        11: ("RES", "Resistance %s%%"),
+        12: ("ACC", "Accuracy %s%%")
     }
 
-    return effect_type_map[typ] if typ in effect_type_map else "UNKNOWN"
+    return effect_type_map[id][mode] if id in effect_type_map else "UNKNOWN"
 
 
 def rune_effect(eff):
@@ -113,10 +118,8 @@ def rune_effect(eff):
         ret = ""
     elif typ == 7 or typ > 12:
         ret = "UNK %s %s" % (typ, value)
-    elif typ in flats:
-        ret = rune_effect_type(typ) + " +%s" % value
     else:
-        ret = rune_effect_type(typ).replace("%%","") + " %s%%" % value
+        ret = rune_effect_type(typ,1) % value
 
     if len(eff) > 2:
         if eff[2] != 0:
