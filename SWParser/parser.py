@@ -369,10 +369,16 @@ def parse_login_data(data, plugins=[]):
                 if item['item_master_type'] == t[0] and item['item_master_id'] == t[1]:
                     wizard_data[i] = item['item_quantity']
 
+        wizard_footer = []
+
         for plugin in plugins:
             plugin.plugin_object.process_csv_row('wizard', 'wizard', (wizard, wizard_data))
+            plugin.plugin_object.process_csv_row('wizard', 'footer', wizard_footer)
 
         wizard_writter.writerow(wizard_data)
+
+        if len(wizard_footer) > 0:
+            wizard_writter.writerows(wizard_footer)
 
     optimizer = {
         "runes": [],
@@ -464,6 +470,20 @@ def parse_login_data(data, plugins=[]):
                         plugin.plugin_object.process_csv_row('runes', 'rune', (rune, csv_rune))
 
                     rune_writer.writerow(csv_rune)
+
+            rune_footer = []
+            monster_footer = []
+
+            for plugin in plugins:
+                plugin.plugin_object.process_csv_row('runes', 'footer', rune_footer)
+                plugin.plugin_object.process_csv_row('monster', 'footer', monster_footer)
+
+            if len(rune_footer) > 0:
+                rune_writer.writerows(rune_footer)
+
+            if len(monster_footer) > 0:
+                monster_writer.writerows(monster_footer)
+
 
     with open(str(wizard['wizard_id']) +"-optimizer.json", "w") as f:
         f.write(json.dumps(optimizer))
@@ -569,3 +589,11 @@ def parse_visit_data(data, plugins=[]):
                     plugin.plugin_object.process_csv_row('visit', 'rune', (rune, rune_map))
 
                 visit_writer.writerow(rune_map)
+
+        visit_footer = []
+
+        for plugin in plugins:
+            plugin.plugin_object.process_csv_row('visit', 'footer', visit_footer)
+
+        if len(visit_footer) > 0:
+            visit_writer.writerows(visit_footer)
