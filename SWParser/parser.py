@@ -24,7 +24,7 @@ class DictUnicodeWriter(object):
             self.writebom()
 
     def writerow(self, D):
-        self.writer.writerow({k:v.encode("utf-8") if not isinstance(v, numbers.Number) else str(v).encode("utf-8") for k,v in D.items()})
+        self.writer.writerow({k:unicode(v).encode("utf-8") for k, v in D.items()})
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
@@ -369,10 +369,16 @@ def parse_login_data(data, plugins=[]):
                 if item['item_master_type'] == t[0] and item['item_master_id'] == t[1]:
                     wizard_data[i] = item['item_quantity']
 
+        wizard_footer = []
+
         for plugin in plugins:
             plugin.plugin_object.process_csv_row('wizard', 'wizard', (wizard, wizard_data))
+            plugin.plugin_object.process_csv_row('wizard', 'footer', wizard_footer)
 
         wizard_writter.writerow(wizard_data)
+
+        if len(wizard_footer) > 0:
+            wizard_writter.writerows(wizard_footer)
 
     optimizer = {
         "runes": [],
@@ -385,19 +391,19 @@ def parse_login_data(data, plugins=[]):
     rune_id = 1
     for rune in runes:
         rune_id_mapping[rune['rune_id']] = rune_id
-        rune_id = rune_id + 1
+        rune_id += 1
 
     monster_id = 1
     for monster in monsters:
         monster_id_mapping[monster['unit_id']] = monster_id
-        monster_id = monster_id + 1
+        monster_id += 1
         monster_runes = monster['runes']
         if isinstance(monster_runes, dict):
             monster_runes = monster_runes.values()
         monster_runes.sort(key = lambda r: r['slot_no'])
         for rune in monster_runes:
             rune_id_mapping[rune['rune_id']] = rune_id
-            rune_id = rune_id + 1
+            rune_id += 1
 
     with open(str(wizard['wizard_id']) + "-runes.csv", "wb") as rune_file:
         rune_fieldnames = ['rune_id','monster_id','rune_set','slot','rune_grade','rune_level','sell_price','pri_eff'
@@ -465,6 +471,20 @@ def parse_login_data(data, plugins=[]):
 
                     rune_writer.writerow(csv_rune)
 
+            rune_footer = []
+            monster_footer = []
+
+            for plugin in plugins:
+                plugin.plugin_object.process_csv_row('runes', 'footer', rune_footer)
+                plugin.plugin_object.process_csv_row('monster', 'footer', monster_footer)
+
+            if len(rune_footer) > 0:
+                rune_writer.writerows(rune_footer)
+
+            if len(monster_footer) > 0:
+                monster_writer.writerows(monster_footer)
+
+
     with open(str(wizard['wizard_id']) +"-optimizer.json", "w") as f:
         f.write(json.dumps(optimizer))
 
@@ -486,7 +506,7 @@ def map_monster(monster, monster_id_mapping, storage_id, wizard_name=None):
         'acc': monster['accuracy']
     }
 
-    if wizard_name == None:
+    if wizard_name is None:
         csv_map['id'] = monster_id_mapping[monster['unit_id']]
     else:
         csv_map.update({'wizard_name' : wizard_name}),
@@ -495,18 +515,18 @@ def map_monster(monster, monster_id_mapping, storage_id, wizard_name=None):
         optimizer_monster = {"id": monster_id_mapping[monster['unit_id']],
                              "name":"%s%s" % (monster_name(monster['unit_master_id'], "Unknown name"),
                                               " (In Storage)" if monster['building_id'] == storage_id else ""),
-                             "level":monster['unit_level'],
-                             "unit_id":monster['unit_id'],
-                             "stars":monster['class'],
-                             "attribute":monster_attribute(monster['attribute']),
-                             "b_hp":int(monster['con']) * 15,
-                             "b_atk":monster['atk'],
-                             "b_def":monster['def'],
-                             "b_spd":monster['spd'],
-                             "b_crate":monster['critical_rate'],
-                             "b_cdmg":monster['critical_damage'],
-                             "b_res":monster['resist'],
-                             "b_acc":monster['accuracy']}
+                             "level": monster['unit_level'],
+                             "unit_id": monster['unit_id'],
+                             "stars": monster['class'],
+                             "attribute": monster_attribute(monster['attribute']),
+                             "b_hp": int(monster['con']) * 15,
+                             "b_atk": monster['atk'],
+                             "b_def": monster['def'],
+                             "b_spd": monster['spd'],
+                             "b_crate": monster['critical_rate'],
+                             "b_cdmg": monster['critical_damage'],
+                             "b_res": monster['resist'],
+                             "b_acc": monster['accuracy']}
     else:
         optimizer_monster = None
 
@@ -531,7 +551,7 @@ def parse_visit_data(data, plugins=[]):
     with open("visit-" + str(wizard_id) + ".json", "w") as f:
         f.write(json.dumps(data, indent=4))
 
-    with open("visit-" + str(wizard_id) +"-monsters.csv", "wb") as visit_file:
+    with open("visit-" + str(wizard_id) + "-monsters.csv", "wb") as visit_file:
         visit_fieldnames = ['wizard_name', 'name', 'grade', 'level', 'attribute', 'in_storage', 'hp', 'atk', 'hp',
                             'def', 'spd', 'crate', 'cdmg', 'res', 'acc', 'slot', 'rune_set','rune_grade','rune_level',
                             'pri_eff','pre_eff','sub1','sub2','sub3','sub4']
@@ -551,7 +571,7 @@ def parse_visit_data(data, plugins=[]):
         visit_writer.writerow(visit_header)
 
         for monster in monsters:
-            _, monster_csv =  map_monster(monster, None, storage_id, friend['wizard_name'])
+            _, monster_csv = map_monster(monster, None, storage_id, friend['wizard_name'])
 
             for plugin in plugins:
                 plugin.plugin_object.process_csv_row('visit', 'monster', (monster, monster_csv))
@@ -569,3 +589,11 @@ def parse_visit_data(data, plugins=[]):
                     plugin.plugin_object.process_csv_row('visit', 'rune', (rune, rune_map))
 
                 visit_writer.writerow(rune_map)
+
+        visit_footer = []
+
+        for plugin in plugins:
+            plugin.plugin_object.process_csv_row('visit', 'footer', visit_footer)
+
+        if len(visit_footer) > 0:
+            visit_writer.writerows(visit_footer)
