@@ -24,7 +24,7 @@ class DictUnicodeWriter(object):
             self.writebom()
 
     def writerow(self, D):
-        self.writer.writerow({k:v.encode("utf-8") if not isinstance(v, numbers.Number) else str(v).encode("utf-8") for k,v in D.items()})
+        self.writer.writerow({k:unicode(v).encode("utf-8") for k, v in D.items()})
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
