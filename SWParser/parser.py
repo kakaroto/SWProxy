@@ -97,41 +97,26 @@ def rune_effect_type(typ):
 
     return effect_type_map[typ] if typ in effect_type_map else "UNKNOWN"
 
+
 def rune_effect(eff):
     typ = eff[0]
     value = eff[1]
+    flats = [1,3,5,8]
     if len(eff) > 3:
         if eff[3] != 0:
-            if typ == 1 or typ == 3 or typ == 5 or typ == 8:
+            if typ in flats:
                 value = "%s -> +%s" % (value, str(int(value) + int(eff[3])))
             else:
                 value = "%s%% -> %s" % (value, str(int(value) + int(eff[3])))
+
     if typ == 0:
         ret = ""
-    elif typ == 1:
-        ret = "HP +%s" % value
-    elif typ == 2:
-        ret = "HP %s%%" % value
-    elif typ == 3:
-        ret = "ATK +%s" % value
-    elif typ == 4:
-        ret = "ATK %s%%" % value
-    elif typ == 5:
-        ret = "DEF +%s" % value
-    elif typ == 6:
-        ret = "DEF %s%%" % value
-    elif typ == 8:
-        ret = "SPD +%s" % value
-    elif typ == 9:
-        ret = "CRI Rate %s%%" % value
-    elif typ == 10:
-        ret = "CRI Dmg %s%%" % value
-    elif typ == 11:
-        ret = "Resistance %s%%" % value
-    elif typ == 12:
-        ret = "Accuracy %s%%" % value
-    else:
+    elif typ == 7 or typ > 12:
         ret = "UNK %s %s" % (typ, value)
+    elif typ in flats:
+        ret = rune_effect_type(typ) + " +%s" % value
+    else:
+        ret = rune_effect_type(typ).replace("%%","") + " %s%%" % value
 
     if len(eff) > 2:
         if eff[2] != 0:
