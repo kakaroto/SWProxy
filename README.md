@@ -63,7 +63,7 @@ Install pycrypto by doing the following command: `sudo -H pip install pycrypto d
 	  Running setup.py install for pycrypto
 	Successfully installed pycrypto-2.6.1
 
-If you do not have the 'pip' command installed, use 'sudo -H easy_install pycrypt dpkt yapsyo' to install pycrypto.
+If you do not have the 'pip' command installed, use 'sudo -H easy_install pycrypt dpkt yapsy' to install pycrypto.
 
 Now you should be able to start the proxy. Simply run the following command: `python SWProxy.py`. If all went fine, you should see the following message:
 
