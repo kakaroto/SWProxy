@@ -77,34 +77,25 @@ def monster_attribute(attribute):
     else:
         return attribute
 
-def rune_effect_type(typ):
-    if typ == 0:
-        return ""
-    elif typ == 1:
-        return "HP flat"
-    elif typ == 2:
-        return "HP%"
-    elif typ == 3:
-        return "ATK flat"
-    elif typ == 4:
-        return "ATK%"
-    elif typ == 5:
-        return "DEF flat"
-    elif typ == 6:
-        return "DEF%"
-    elif typ == 8:
-        return "SPD"
-    elif typ == 9:
-        return "CRate"
-    elif typ == 10:
-        return "CDmg"
-    elif typ == 11:
-        return "RES"
-    elif typ == 12:
-        return "ACC"
-    else:
-        return "UNKNOWN"
 
+def rune_effect_type(typ):
+    effect_type_map = {
+        0: "",
+        1: "HP flat",
+        2: "HP%",
+        3: "ATK flat",
+        4: "ATK%",
+        5: "DEF flat",
+        6: "DEF%",
+        # 7: "UNKNOWN",  # ?
+        8: "SPD",
+        9: "CRate",
+        10: "CDmg",
+        11: "RES",
+        12: "ACC"
+    }
+
+    return effect_type_map[typ] if typ in effect_type_map else "UNKNOWN"
 
 def rune_effect(eff):
     typ = eff[0]
