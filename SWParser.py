@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from SWParser import parse_login_data, parse_visit_data
 from SWParser.smon_decryptor import decrypt_request, decrypt_response
