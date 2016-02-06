@@ -48,7 +48,7 @@ All you need to run it is the following dependencies :
 
 You can install python with your package manager and the python dependencies as well, or you can install the python dependencies with :
 
-```sudo pip install pycrypto dpkt yapsy```
+```sudo pip install -r requirements.txt```
 
 ## Using it on a MAC:
 
