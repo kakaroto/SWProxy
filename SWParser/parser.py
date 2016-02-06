@@ -77,70 +77,49 @@ def monster_attribute(attribute):
     else:
         return attribute
 
-def rune_effect_type(typ):
-    if typ == 0:
-        return ""
-    elif typ == 1:
-        return "HP flat"
-    elif typ == 2:
-        return "HP%"
-    elif typ == 3:
-        return "ATK flat"
-    elif typ == 4:
-        return "ATK%"
-    elif typ == 5:
-        return "DEF flat"
-    elif typ == 6:
-        return "DEF%"
-    elif typ == 8:
-        return "SPD"
-    elif typ == 9:
-        return "CRate"
-    elif typ == 10:
-        return "CDmg"
-    elif typ == 11:
-        return "RES"
-    elif typ == 12:
-        return "ACC"
-    else:
-        return "UNKNOWN"
+
+def rune_effect_type(id, mode=0):
+    """mode 0 = rune optimizer, mode 1 = csv export"""
+
+    if mode != 0 and mode != 1:
+        raise ValueError('Should be 0 (optimizer) or 1 (csv)')
+
+    effect_type_map = {
+        0: ("",""),
+        1: ("HP flat", "HP +%s"),
+        2: ("HP%", "HP %s%%"),
+        3: ("ATK flat", "ATK +%s"),
+        4: ("ATK%", "ATK %s%%"),
+        5: ("DEF flat", "DEF +%s"),
+        6: ("DEF%", "DEF %s%%"),
+        # 7: "UNKNOWN",  # ?
+        8: ("SPD", "SPD +%s"),
+        9: ("CRate", "CRI Rate %s%%"),
+        10: ("CDmg", "CRI Dmg %s%%"),
+        11: ("RES", "Resistance %s%%"),
+        12: ("ACC", "Accuracy %s%%")
+    }
+
+    return effect_type_map[id][mode] if id in effect_type_map else "UNKNOWN"
 
 
 def rune_effect(eff):
     typ = eff[0]
     value = eff[1]
+    flats = [1,3,5,8]
     if len(eff) > 3:
         if eff[3] != 0:
-            if typ == 1 or typ == 3 or typ == 5 or typ == 8:
+            if typ in flats:
                 value = "%s -> +%s" % (value, str(int(value) + int(eff[3])))
             else:
                 value = "%s%% -> %s" % (value, str(int(value) + int(eff[3])))
+
     if typ == 0:
         ret = ""
-    elif typ == 1:
-        ret = "HP +%s" % value
-    elif typ == 2:
-        ret = "HP %s%%" % value
-    elif typ == 3:
-        ret = "ATK +%s" % value
-    elif typ == 4:
-        ret = "ATK %s%%" % value
-    elif typ == 5:
-        ret = "DEF +%s" % value
-    elif typ == 6:
-        ret = "DEF %s%%" % value
-    elif typ == 8:
-        ret = "SPD +%s" % value
-    elif typ == 9:
-        ret = "CRI Rate %s%%" % value
-    elif typ == 10:
-        ret = "CRI Dmg %s%%" % value
-    elif typ == 11:
-        ret = "Resistance %s%%" % value
-    elif typ == 12:
-        ret = "Accuracy %s%%" % value
-    else:
+    elif typ == 7 or typ > 12:
         ret = "UNK %s %s" % (typ, value)
+    else:
+        ret = rune_effect_type(typ,1) % value
 
     if len(eff) > 2:
         if eff[2] != 0:
@@ -192,41 +171,22 @@ def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     for i in range(0, len(rune['sec_eff'])):
         cvs_map['sub' + str(i + 1)] = rune_effect(rune['sec_eff'][i])
 
-    sub_atkf = "-"
-    sub_atkp = "-"
-    sub_hpf = "-"
-    sub_hpp = "-"
-    sub_deff = "-"
-    sub_defp = "-"
-    sub_res = "-"
-    sub_acc = "-"
-    sub_spd = "-"
-    sub_cdmg = "-"
-    sub_crate = "-"
+    subs = {
+        'ATK flat': '-',
+        'ATK%': '-',
+        'HP flat': '-',
+        'HP%': '-',
+        'DEF flat': '-',
+        'DEF%': '-',
+        'RES': '-',
+        'ACC': '-',
+        'SPD': '-',
+        'CDmg': '-',
+        'CRate': '-',
+    }
 
     for sec_eff in rune['sec_eff']:
-        if rune_effect_type(sec_eff[0]) == "ATK flat":
-            sub_atkf = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "ATK%":
-            sub_atkp = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "HP flat":
-            sub_hpf = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "HP%":
-            sub_hpp = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "DEF flat":
-            sub_deff = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "DEF%":
-            sub_defp = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "RES":
-            sub_res = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "ACC":
-            sub_acc = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "SPD":
-            sub_spd = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "CDmg":
-            sub_cdmg = sec_eff[1] + sec_eff[3]
-        elif rune_effect_type(sec_eff[0]) == "CRate":
-            sub_crate = sec_eff[1] + sec_eff[3]
+        subs[rune_effect_type(sec_eff[0])] = sec_eff[1] + sec_eff[3]
 
     optimizer_map = {"id": rune_id,
             "unique_id": rune['rune_id'],
@@ -249,17 +209,17 @@ def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
             "s4_t": rune_effect_type(rune['sec_eff'][3][0]) if len(rune['sec_eff']) >= 4 else "",
             "s4_v": rune['sec_eff'][3][1] + rune['sec_eff'][3][3] if len(rune['sec_eff']) >= 4 else 0,
             "locked":0,
-            "sub_res":sub_res,
-            "sub_cdmg":sub_cdmg,
-            "sub_atkf": sub_atkf,
-            "sub_acc": sub_acc,
-            "sub_atkp": sub_atkp,
-            "sub_defp": sub_defp,
-            "sub_deff": sub_deff,
-            "sub_hpp": sub_hpp,
-            "sub_hpf": sub_hpf,
-            "sub_spd": sub_spd,
-            "sub_crate": sub_crate}
+            "sub_res": subs['RES'],
+            "sub_cdmg": subs['CDmg'],
+            "sub_atkf": subs['ATK flat'],
+            "sub_acc": subs['ACC'],
+            "sub_atkp": subs['ATK%'],
+            "sub_defp": subs['DEF%'],
+            "sub_deff": subs['DEF flat'],
+            "sub_hpp": subs['HP%'],
+            "sub_hpf": subs['HP flat'],
+            "sub_spd": subs['SPD'],
+            "sub_crate": subs['CRate']}
 
     return optimizer_map, cvs_map
 
