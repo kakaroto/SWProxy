@@ -20,14 +20,49 @@ def initialize_yapsy_plugins():
     manager.setPluginPlaces([os.path.join(os.getcwd(), "plugins")])
     manager.collectPlugins()
     ret = manager.getAllPlugins()
-    logger.debug('Initialized {} plugins'.format(ret))
+    logger.info('Initialized {} plugins'.format(ret))
     return ret
+
+
+class HTTP(proxy.TCP):
+    """
+    HTTP proxy server implementation.
+    Spawns new process to proxy accepted client connection.
+    """
+
+    def handle(self, client):
+        callback = SWProxyCallback()
+        proc = proxy.Proxy(client, callback)
+        proc.daemon = True
+        proc.start()
+        logger.debug('Started process {} to handle connection {}'.format(proc, client.conn))
 
 
 class ProxyCallback(object):
 
+    def __init__(self):
+        self.host = None
+        self.port = 0
+        self.request = None
+
+    def onRequest(self, proxy, host, port, request):
+        self.host = host
+        self.port = port
+        self.request = request  # store request for retrieval later
+        # FIXME send onRequest to plugins?
+
+    def onResponse(self, proxy, response):
+        pass
+
+    def onDone(self, proxy):
+        pass
+
+
+class SWProxyCallback(ProxyCallback):
+
     plugins = initialize_yapsy_plugins()
 
+    # helpers
     is_com2us_api = lambda self: all((
         self.host,
         self.host.startswith('summonerswar'),
@@ -40,24 +75,10 @@ class ProxyCallback(object):
     is_visit_friend_api = lambda self, x: x.get('command') in ('VisitFriend',)
     is_unit_collection_api = lambda self, x: x.get('command') in ('GetUnitCollection',)
 
-    def __init__(self):
-        self.host = None
-        self.port = 0
-        self.request = None
-        self.response = None
-
-    def onRequest(self, proxy, host, port, request):
-        self.host = host
-        self.port = port
-        self.request = request
-        # FIXME send onRequest to plugins
-
     def onResponse(self, proxy, response):
         
         try:
             if self.is_com2us_api():
-
-                self.response = response
                 
                 req_plain, req_json = self.parse_request(self.request)
                 resp_plain, resp_json = self.parse_response(response)
@@ -74,7 +95,6 @@ class ProxyCallback(object):
                                 plugin.plugin_object.__class__.__name__, e
                             )   
                         )
-
 
                 if self.is_login_api(resp_json):
                     # FIXME move to plugin?
@@ -97,9 +117,6 @@ class ProxyCallback(object):
         except Exception as e:
             logger.debug('unknown exception: {}'.format(e))
 
-    def onDone(self, proxy):
-        pass
-
     def parse_request(self, request):
         """ takes a request, returns the decrypted plain and json """
         plain = decrypt_request(request.body)
@@ -109,20 +126,6 @@ class ProxyCallback(object):
         """ takes a response body, returns the decrypted plain and json """
         plain = decrypt_response(response.body)
         return plain, json.loads(plain)
-
-
-class HTTP(proxy.TCP):
-    """
-    HTTP proxy server implementation.
-    Spawns new process to proxy accepted client connection.
-    """
-
-    def handle(self, client):
-        callback = ProxyCallback()
-        proc = proxy.Proxy(client, callback)
-        proc.daemon = True
-        proc.start()
-        logger.debug('Started process {} to handle connection {}'.format(proc, client.conn))
 
 
 def get_external_ip():
