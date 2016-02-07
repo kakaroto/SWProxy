@@ -332,7 +332,7 @@ def parse_login_data(data, plugins=[]):
         wizard_footer = []
 
         SWPlugin.call_plugins(plugins, 'process_csv_row', ('wizard', 'wizard', (wizard, wizard_data)))
-        SWPlugin.call_plugins(plugins, 'process_csv_row', ('wizard', 'footer', (wizard_footer,)))
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('wizard', 'footer', wizard_footer))
 
         wizard_writter.writerow(wizard_data)
 
@@ -429,8 +429,8 @@ def parse_login_data(data, plugins=[]):
             rune_footer = []
             monster_footer = []
 
-            SWPlugin.call_plugins(plugins, 'process_csv_row', ('runes', 'footer', (rune_footer,)))
-            SWPlugin.call_plugins(plugins, 'process_csv_row', ('monster', 'footer', (monster_footer,)))
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('runes', 'footer', rune_footer))
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('monster', 'footer', monster_footer))
 
             if len(rune_footer) > 0:
                 rune_writer.writerows(rune_footer)
@@ -543,7 +543,7 @@ def parse_visit_data(data, plugins=[]):
 
         visit_footer = []
 
-        SWPlugin.call_plugins(plugins, 'process_csv_row', ('visit', 'footer', (visit_footer,)))
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('visit', 'footer', visit_footer))
 
         if len(visit_footer) > 0:
             visit_writer.writerows(visit_footer)
