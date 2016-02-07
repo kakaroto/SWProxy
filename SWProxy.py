@@ -7,11 +7,13 @@ from yapsy.PluginManager import PluginManager
 import json
 import os
 import proxy
+import SWPlugin
 import socket
 import sys
 
 VERSION = "0.97"
 logger = logging.getLogger(__name__)
+logging.basicConfig()
 
 
 def initialize_yapsy_plugins():
@@ -49,12 +51,12 @@ class ProxyCallback(object):
                 if 'command' not in resp_json:
                     return
 
-                for plugin in ProxyCallback.plugins:
-                    try:
-                        plugin.plugin_object.process_request(req_json, resp_json, ProxyCallback.plugins)
-                    except Exception as e:
-                        logger.exception('Exception while executing plugin "%s": %s' \
-                                         % (plugin.plugin_object.__class__.__name__, e))
+                try:
+                    SWPlugin.call_plugins(ProxyCallback.plugins, 'process_request', (req_json, resp_json, ProxyCallback.plugins))
+                except Exception as e:
+                    logger.exception('Exception while executing plugin "%s"' % e)
+
+
                 if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
                     parse_login_data(resp_json, ProxyCallback.plugins)
                     print "Monsters and Runes data generated"
