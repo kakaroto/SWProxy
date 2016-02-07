@@ -1,0 +1,7 @@
+[Core]
+Name = Generate Runes
+Module = GenerateRunes
+
+[Documentation]
+Version = 0.1
+Description = Generates rune files in csv and json formats
