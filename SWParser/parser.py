@@ -155,7 +155,7 @@ def rune_set_id(id):
 def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     cvs_map ={
         'slot': rune['slot_no'],
-        'rune_set': rune['set_id'],
+        'rune_set': rune_set_id(rune['set_id']),
         'rune_grade': rune['class'],
         'rune_level':  rune['upgrade_curr'],
         'pri_eff': rune_effect(rune['pri_eff']),
