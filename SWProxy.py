@@ -11,7 +11,7 @@ import socket
 import sys
 
 VERSION = "0.97"
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("SWProxy")
 
 
 def initialize_yapsy_plugins():
@@ -57,13 +57,13 @@ class ProxyCallback(object):
                                          % (plugin.plugin_object.__class__.__name__, e))
                 if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
                     parse_login_data(resp_json, ProxyCallback.plugins)
-                    print "Monsters and Runes data generated"
+                    logger.info("Monsters and Runes data generated")
                 elif resp_json['command'] == 'VisitFriend':
                     parse_visit_data(resp_json, ProxyCallback.plugins)
-                    print "Visit Friend data generated"
+                    logger.info("Visit Friend data generated")
                 elif resp_json['command'] == 'GetUnitCollection':
                     collection = resp_json['collection']
-                    print "Your collection has %d/%d monsters" % (sum([y['open'] for y in collection]), len(collection))
+                    logger.info("Your collection has %d/%d monsters" % (sum([y['open'] for y in collection]), len(collection)))
             except:
                 pass
     def onDone(self, proxy):
@@ -86,13 +86,33 @@ if __name__ == "__main__":
     print "SWParser v%s - Summoners War Proxy" % VERSION
     print "\tWritten by KaKaRoTo\n\nLicensed under LGPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser\n"
 
-    logging.basicConfig(level="ERROR", format='%(levelname)s - %(message)s')
-    port = 8080 if len(sys.argv) < 2 else int(sys.argv[1])
+    logging.basicConfig(level="DEBUG", filename="proxy.log", format='%(levelname)s - %(message)s')
+    logger.setLevel(logging.INFO)
+
+    no_gui = False
+    if len(sys.argv) > 1 and sys.argv[1] == '--no-gui':
+        no_gui = True
+        port = 8080 if len(sys.argv) < 3 else int(sys.argv[2])
+    else:
+        port = 8080 if len(sys.argv) < 2 else int(sys.argv[1])
+
     my_ip = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]][0]
 
-    try:
-        print "Running Proxy server at %s on port %s" % (my_ip, port)
-        p = HTTP(my_ip,  port)
-        p.run()
-    except KeyboardInterrupt:
-        pass
+    if no_gui:
+        logger.addHandler(logging.StreamHandler())
+        try:
+            print "Running Proxy server at %s on port %s" % (my_ip, port)
+            p = HTTP(my_ip,  port)
+            p.run()
+        except KeyboardInterrupt:
+            pass
+    else:
+        # Import here to avoid importing QT in CLI mode
+        from SWParser.gui import gui
+        from PyQt4.QtGui import QApplication
+
+        app = QApplication(sys.argv)
+        win = gui.MainWindow(my_ip, port)
+        logger.addHandler(gui.GuiLogHandler(win))
+        win.show()
+        sys.exit(app.exec_())
