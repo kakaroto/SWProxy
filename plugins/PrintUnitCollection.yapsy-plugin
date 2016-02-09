@@ -1,0 +1,7 @@
+[Core]
+Name = Print Unit Collection
+Module = PrintUnitCollection
+
+[Documentation]
+Version = 0.1
+Description = Prints unit collection information

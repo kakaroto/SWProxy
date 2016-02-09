@@ -1,119 +1,174 @@
 #!/usr/bin/env python
 
-import logging
-from SWParser import parse_login_data, parse_visit_data
 from SWParser.smon_decryptor import decrypt_request, decrypt_response
 from yapsy.PluginManager import PluginManager
 import json
+import logging
 import os
 import proxy
 import SWPlugin
 import socket
 import sys
+import argparse
 
 VERSION = "0.97"
+GITHUB = 'https://github.com/kakaroto/SWParser'
 logger = logging.getLogger("SWProxy")
 
 
-def initialize_yapsy_plugins():
+def load_plugins():
     manager = PluginManager()
-    manager.setPluginPlaces([os.getcwd() + os.sep + "plugins"])
+    manager.setPluginPlaces([os.path.join(os.getcwd(), "plugins/")])
     manager.collectPlugins()
-    return manager.getAllPlugins()
+    ret = manager.getAllPlugins()
+    # logger.info('Loaded {} plugins'.format(len(ret)))
+    return ret
+
+
+class HTTP(proxy.TCP):
+    """
+    HTTP proxy server implementation.
+    Spawns new process to proxy accepted client connection.
+    """
+
+    def handle(self, client):
+        callback = SWProxyCallback()
+        proc = proxy.Proxy(client, callback)
+        proc.daemon = True
+        proc.start()
+        logger.debug('Started process {} to handle connection {}'.format(proc, client.conn))
 
 
 class ProxyCallback(object):
-    plugins = initialize_yapsy_plugins()
 
     def __init__(self):
         self.host = None
         self.port = 0
         self.request = None
-        self.response = None
 
     def onRequest(self, proxy, host, port, request):
         self.host = host
         self.port = port
-        self.request = request
 
     def onResponse(self, proxy, response):
-        self.response = response
-        if self.host and self.host.startswith("summonerswar") and \
-           self.host.endswith("com2us.net") and \
-           self.request and self.request.url.path.startswith("/api/"):
-            try:
-                req_plain = decrypt_request(self.request.body)
-                req_json = json.loads(req_plain)
-                resp_plain = decrypt_response(response.body)
-                resp_json = json.loads(resp_plain)
+        pass 
+
+    def onDone(self, proxy):
+        pass
+
+
+class SWProxyCallback(ProxyCallback):
+
+    plugins = load_plugins()
+
+    is_com2us_api = lambda self: all((
+        self.host,
+        self.host.startswith('summonerswar'),
+        self.host.endswith('com2us.net'),
+        self.request,
+        self.request.url.path.startswith('/api/'),
+    ))
+
+    def onRequest(self, proxy, host, port, request):
+        super(SWProxyCallback, self).onRequest(proxy, host, port, request)
+        self.request = request  # store request for retrieval later
+
+    def onResponse(self, proxy, response):
+        
+        try:
+            if self.request and self.is_com2us_api():
+                
+                req_plain, req_json = self.parse_request(self.request)
+                resp_plain, resp_json = self.parse_response(response)
 
                 if 'command' not in resp_json:
                     return
 
                 try:
-                    SWPlugin.call_plugins(ProxyCallback.plugins, 'process_request', (req_json, resp_json, ProxyCallback.plugins))
+                    SWPlugin.call_plugins(ProxyCallback.plugins, 'process_request', (req_json, resp_json, SWProxyCallback.plugins))
                 except Exception as e:
-                    logger.exception('Exception while executing plugin "%s"' % e)
+                    logger.exception('Exception while executing plugin : {}'.format(e))
+
+        except Exception as e:
+            logger.debug('unknown exception: {}'.format(e))
+
+    def parse_request(self, request):
+        """ takes a request, returns the decrypted plain and json """
+        plain = decrypt_request(request.body)
+        return plain, json.loads(plain)
+
+    def parse_response(self, response):
+        """ takes a response body, returns the decrypted plain and json """
+        plain = decrypt_response(response.body)
+        return plain, json.loads(plain)
+
+def get_external_ip():
+    # ref: http://stackoverflow.com/a/1267524
+    try:
+        sockets = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
+        ips = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], sockets) if l]
+        return ips[0][0]
+    except KeyError:
+        # fallback on error
+        return socket.gethostbyname(socket.gethostname())
+    
+
+def read_file_lines(fpath):
+    try:
+        with open(fpath, 'r') as fh:
+            return map(lambda x:x.strip(), fh.readlines())
+    except Exception:
+        logger.debug('Failed to read file at {}'.format(fpath))
+        return ''
 
 
-                if resp_json['command'] == 'HubUserLogin' or resp_json['command'] == 'GuestLogin':
-                    parse_login_data(resp_json, ProxyCallback.plugins)
-                    logger.info("Monsters and Runes data generated")
-                elif resp_json['command'] == 'VisitFriend':
-                    parse_visit_data(resp_json, ProxyCallback.plugins)
-                    logger.info("Visit Friend data generated")
-                elif resp_json['command'] == 'GetUnitCollection':
-                    collection = resp_json['collection']
-                    logger.info("Your collection has %d/%d monsters" % (sum([y['open'] for y in collection]), len(collection)))
-            except:
-                pass
-    def onDone(self, proxy):
+def start_proxy_server(options):
+
+    authors_text = read_file_lines('AUTHORS')
+
+    print "#"*40
+    print "# SWParser v{} - Summoners War Proxy # ".format(VERSION)
+    print "#"*40
+    print "\tWritten by:\n\t\tKaKaRoTo\n"
+    print "\tAuthors:"
+    for author in authors_text:
+        print "\t\t{}".format(author)
+
+    print "\n\tPlugins:"
+    for plugin in SWProxyCallback.plugins:
+        print "\t\t{}".format(plugin.name)
+
+    print "\nLicensed under LGPLv3 and available at: \n\t{}\n".format(GITHUB)
+
+    level = "DEBUG" if options.debug else "ERROR"
+    logging.basicConfig(level=level, filename="proxy.log", format='%(levelname)s - %(message)s')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
+
+    my_ip = get_external_ip()
+
+    try:
+        print "Running Proxy server at {} on port {}".format(my_ip, options.port)
+        p = HTTP(my_ip,  options.port)
+        p.run()
+    except KeyboardInterrupt:
         pass
 
-class HTTP(proxy.TCP):
-    """HTTP proxy server implementation.
-
-    Spawns new process to proxy accepted client connection.
-    """
-
-    def handle(self, client):
-        callback = ProxyCallback()
-        proc = proxy.Proxy(client, callback)
-        proc.daemon = True
-        proc.start()
-        logger.debug('Started process %r to handle connection %r' % (proc, client.conn))
-
 if __name__ == "__main__":
-    print "SWParser v%s - Summoners War Proxy" % VERSION
-    print "\tWritten by KaKaRoTo\n\nLicensed under LGPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser\n"
-
-    logging.basicConfig(level="DEBUG", filename="proxy.log", format='%(levelname)s - %(message)s')
-    logger.setLevel(logging.INFO)
-
-    no_gui = False
-    if len(sys.argv) > 1 and sys.argv[1] == '--no-gui':
-        no_gui = True
-        port = 8080 if len(sys.argv) < 3 else int(sys.argv[2])
-    else:
-        port = 8080 if len(sys.argv) < 2 else int(sys.argv[1])
-
-    my_ip = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]][0]
-
-    if no_gui:
-        logger.addHandler(logging.StreamHandler())
-        try:
-            print "Running Proxy server at %s on port %s" % (my_ip, port)
-            p = HTTP(my_ip,  port)
-            p.run()
-        except KeyboardInterrupt:
-            pass
+    parser = argparse.ArgumentParser(description='SWParser')
+    parser.add_argument('-d', '--debug', action="store_true", default=False)
+    parser.add_argument('-g', '--no-gui', action="store_true", default=False)
+    parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
+    options = parser.parse_args()
+    if options.no_gui:
+        start_proxy_server(options)
     else:
         # Import here to avoid importing QT in CLI mode
         from SWParser.gui import gui
         from PyQt4.QtGui import QApplication
 
         app = QApplication(sys.argv)
-        win = gui.MainWindow(my_ip, port)
+        win = gui.MainWindow(get_external_ip(), options.port)
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())
