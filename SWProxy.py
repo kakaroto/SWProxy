@@ -128,7 +128,7 @@ def read_file_lines(fpath):
         return ''
 
 
-def start_proxy_server(args):
+def start_proxy_server(options):
 
     authors_text = read_file_lines('AUTHORS')
 
@@ -146,15 +146,15 @@ def start_proxy_server(args):
 
     print "\nLicensed under LGPLv3 and available at: \n\t{}\n".format(GITHUB)
 
-    level = "DEBUG" if args.debug else "ERROR"
+    level = "DEBUG" if options.debug else "ERROR"
     logging.basicConfig(level=level, format='%(levelname)s - %(message)s')
 
 
     my_ip = get_external_ip()
 
     try:
-        print "Running Proxy server at {} on port {}".format(my_ip, args.port)
-        p = HTTP(my_ip,  args.port)
+        print "Running Proxy server at {} on port {}".format(my_ip, options.port)
+        p = HTTP(my_ip,  options.port)
         p.run()
     except KeyboardInterrupt:
         pass
@@ -163,5 +163,4 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SWParser')
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
-    args = parser.parse_args()
-    start_proxy_server(args)
+    start_proxy_server(parser.parse_args())
