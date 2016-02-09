@@ -8,6 +8,7 @@ import struct
 import numbers
 import os
 import codecs
+import SWPlugin
 from collections import OrderedDict
 from smon_decryptor import decrypt_request, decrypt_response
 from monsters import monsters_name_map
@@ -154,7 +155,7 @@ def rune_set_id(id):
 def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     cvs_map ={
         'slot': rune['slot_no'],
-        'rune_set': rune['set_id'],
+        'rune_set': rune_set_id(rune['set_id']),
         'rune_grade': rune['class'],
         'rune_level':  rune['upgrade_curr'],
         'pri_eff': rune_effect(rune['pri_eff']),
@@ -310,8 +311,7 @@ def parse_login_data(data, plugins=[]):
             wizard_fields.append(name)
             wizard_headers[name] = name
 
-        for plugin in plugins:
-            plugin.plugin_object.process_csv_row('wizard', 'header', (wizard_fields, wizard_headers))
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('wizard', 'header', (wizard_fields, wizard_headers)))
 
         wizard_writter = DictUnicodeWriter(wizard_file, fieldnames=wizard_fields)
         wizard_writter.writerow(wizard_headers)
@@ -331,9 +331,8 @@ def parse_login_data(data, plugins=[]):
 
         wizard_footer = []
 
-        for plugin in plugins:
-            plugin.plugin_object.process_csv_row('wizard', 'wizard', (wizard, wizard_data))
-            plugin.plugin_object.process_csv_row('wizard', 'footer', wizard_footer)
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('wizard', 'wizard', (wizard, wizard_data)))
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('wizard', 'footer', wizard_footer))
 
         wizard_writter.writerow(wizard_data)
 
@@ -375,8 +374,7 @@ def parse_login_data(data, plugins=[]):
                   'sub4': 'Fourth Substat'
                   }
 
-        for plugin in plugins:
-            plugin.plugin_object.process_csv_row('runes', 'header', (rune_fieldnames, runes_header))
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('runes', 'header', (rune_fieldnames, runes_header)))
 
         rune_writer = DictUnicodeWriter(rune_file, fieldnames=rune_fieldnames)
         rune_writer.writerow(runes_header)
@@ -384,8 +382,7 @@ def parse_login_data(data, plugins=[]):
         for rune in runes:
             optimizer_rune, csv_rune = map_rune(rune, rune_id_mapping[rune['rune_id']])
 
-            for plugin in plugins:
-                plugin.plugin_object.process_csv_row('runes', 'rune', (rune, csv_rune))
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('runes', 'rune', (rune, csv_rune)))
 
             optimizer['runes'].append(optimizer_rune)
             rune_writer.writerow(csv_rune)
@@ -400,8 +397,7 @@ def parse_login_data(data, plugins=[]):
                               'def': 'def', 'spd': 'spd', 'crate':'cri rate', 'cdmg': 'cri dmg', 'res': 'resistance',
                               'acc': 'accuracy'}
 
-            for plugin in plugins:
-                plugin.plugin_object.process_csv_row('monster', 'header', (monster_fieldnames, monster_header))
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('monster', 'header', (monster_fieldnames, monster_header)))
 
             monster_writer = DictUnicodeWriter(monster_file, fieldnames=monster_fieldnames)
             monster_writer.writerow(monster_header)
@@ -409,8 +405,7 @@ def parse_login_data(data, plugins=[]):
             for monster in monsters:
                 optimizer_monster, csv_monster = map_monster(monster, monster_id_mapping, storage_id)
 
-                for plugin in plugins:
-                    plugin.plugin_object.process_csv_row('monster', 'monster', (monster, csv_monster))
+                SWPlugin.call_plugins(plugins, 'process_csv_row', ('monster', 'monster', (monster, csv_monster)))
 
                 monster_writer.writerow(csv_monster)
 
@@ -434,9 +429,8 @@ def parse_login_data(data, plugins=[]):
             rune_footer = []
             monster_footer = []
 
-            for plugin in plugins:
-                plugin.plugin_object.process_csv_row('runes', 'footer', rune_footer)
-                plugin.plugin_object.process_csv_row('monster', 'footer', monster_footer)
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('runes', 'footer', rune_footer))
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('monster', 'footer', monster_footer))
 
             if len(rune_footer) > 0:
                 rune_writer.writerows(rune_footer)
@@ -524,8 +518,7 @@ def parse_visit_data(data, plugins=[]):
                         'sub2': 'Second Substat', 'sub3': 'Third Substat', 'sub4': 'Fourth Substat',
                         }
 
-        for plugin in plugins:
-            plugin.plugin_object.process_csv_row('visit', 'header', (visit_fieldnames, visit_header))
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('visit', 'header', (visit_fieldnames, visit_header)))
 
         visit_writer = DictUnicodeWriter(visit_file, fieldnames=visit_fieldnames)
         visit_writer.writerow(visit_header)
@@ -533,8 +526,7 @@ def parse_visit_data(data, plugins=[]):
         for monster in monsters:
             _, monster_csv = map_monster(monster, None, storage_id, friend['wizard_name'])
 
-            for plugin in plugins:
-                plugin.plugin_object.process_csv_row('visit', 'monster', (monster, monster_csv))
+            SWPlugin.call_plugins(plugins, 'process_csv_row', ('visit', 'monster', (monster, monster_csv)))
 
             visit_writer.writerow(monster_csv)
 
@@ -545,15 +537,13 @@ def parse_visit_data(data, plugins=[]):
             for rune in monster_runes:
                 _, rune_map = map_rune(rune, None)
 
-                for plugin in plugins:
-                    plugin.plugin_object.process_csv_row('visit', 'rune', (rune, rune_map))
+                SWPlugin.call_plugins(plugins, 'process_csv_row', ('visit', 'rune', (rune, rune_map)))
 
                 visit_writer.writerow(rune_map)
 
         visit_footer = []
 
-        for plugin in plugins:
-            plugin.plugin_object.process_csv_row('visit', 'footer', visit_footer)
+        SWPlugin.call_plugins(plugins, 'process_csv_row', ('visit', 'footer', visit_footer))
 
         if len(visit_footer) > 0:
             visit_writer.writerows(visit_footer)
