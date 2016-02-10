@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
 from SWParser.smon_decryptor import decrypt_request, decrypt_response
-from yapsy.PluginManager import PluginManager
 import json
 import logging
 import os
 import proxy
-import SWPlugin
+from SWPlugin import SWPlugin
 import socket
 import sys
 import argparse
@@ -14,15 +13,6 @@ import argparse
 VERSION = "0.97"
 GITHUB = 'https://github.com/kakaroto/SWParser'
 logger = logging.getLogger("SWProxy")
-
-
-def load_plugins():
-    manager = PluginManager()
-    manager.setPluginPlaces([os.path.join(os.getcwd(), "plugins/")])
-    manager.collectPlugins()
-    ret = manager.getAllPlugins()
-    # logger.info('Loaded {} plugins'.format(len(ret)))
-    return ret
 
 
 class HTTP(proxy.TCP):
@@ -59,8 +49,6 @@ class ProxyCallback(object):
 
 class SWProxyCallback(ProxyCallback):
 
-    plugins = load_plugins()
-
     is_com2us_api = lambda self: all((
         self.host,
         self.host.startswith('summonerswar'),
@@ -85,7 +73,7 @@ class SWProxyCallback(ProxyCallback):
                     return
 
                 try:
-                    SWPlugin.call_plugins(ProxyCallback.plugins, 'process_request', (req_json, resp_json, SWProxyCallback.plugins))
+                    SWPlugin.call_plugins('process_request', (req_json, resp_json))
                 except Exception as e:
                     logger.exception('Exception while executing plugin : {}'.format(e))
 
@@ -134,7 +122,7 @@ def usage():
         lines.append("\t\t{}".format(author))
 
     lines.append("\n\tPlugins:")
-    for plugin in SWProxyCallback.plugins:
+    for plugin in SWPlugin.plugins:
         lines.append("\t\t{}".format(plugin.name))
 
     lines.append("\nLicensed under LGPLv3 and available at: \n\t{}\n".format(GITHUB))
