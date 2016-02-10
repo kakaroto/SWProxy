@@ -121,24 +121,27 @@ def read_file_lines(fpath):
         logger.debug('Failed to read file at {}'.format(fpath))
         return ''
 
-
-def start_proxy_server(options):
-
+def usage():
     authors_text = read_file_lines('AUTHORS')
 
-    print "#"*40
-    print "# SWParser v{} - Summoners War Proxy # ".format(VERSION)
-    print "#"*40
-    print "\tWritten by:\n\t\tKaKaRoTo\n"
-    print "\tAuthors:"
+    lines = []
+    lines.append("#"*40)
+    lines.append("# SWParser v{} - Summoners War Proxy # ".format(VERSION))
+    lines.append("#"*40)
+    lines.append("\tWritten by:\n\t\tKaKaRoTo\n")
+    lines.append("\tAuthors:")
     for author in authors_text:
-        print "\t\t{}".format(author)
+        lines.append("\t\t{}".format(author))
 
-    print "\n\tPlugins:"
+    lines.append("\n\tPlugins:")
     for plugin in SWProxyCallback.plugins:
-        print "\t\t{}".format(plugin.name)
+        lines.append("\t\t{}".format(plugin.name))
 
-    print "\nLicensed under LGPLv3 and available at: \n\t{}\n".format(GITHUB)
+    lines.append("\nLicensed under LGPLv3 and available at: \n\t{}\n".format(GITHUB))
+    return "\n".join(lines)
+
+
+def start_proxy_server(options):
 
     level = "DEBUG" if options.debug else "ERROR"
     logging.basicConfig(level=level, filename="proxy.log", format='%(levelname)s - %(message)s')
@@ -159,6 +162,9 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
+
+    print usage()
+
     options = parser.parse_args()
     if options.no_gui:
         start_proxy_server(options)
