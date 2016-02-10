@@ -1,4 +1,5 @@
 import SWPlugin
+import logging
 
 logger = logging.getLogger("SWProxy")
 

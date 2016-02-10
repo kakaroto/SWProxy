@@ -131,11 +131,6 @@ def usage():
 
 def start_proxy_server(options):
 
-    level = "DEBUG" if options.debug else "ERROR"
-    logging.basicConfig(level=level, filename="proxy.log", format='%(levelname)s - %(message)s')
-    logger.setLevel(logging.INFO)
-    logger.addHandler(logging.StreamHandler())
-
     my_ip = get_external_ip()
 
     try:
@@ -150,17 +145,24 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
+    options = parser.parse_args()
+
+    # Set up logger
+    level = "DEBUG" if options.debug else "INFO"
+    logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+    logger.setLevel(logging.INFO)
 
     print usage()
 
-    options = parser.parse_args()
     if options.no_gui:
+        logger.addHandler(logging.StreamHandler())
         start_proxy_server(options)
     else:
         # Import here to avoid importing QT in CLI mode
         from SWParser.gui import gui
         from PyQt4.QtGui import QApplication
 
+        logging.basicConfig(level="INFO", filename="proxy.log", format='%(levelname)s - %(message)s')
         app = QApplication(sys.argv)
         win = gui.MainWindow(get_external_ip(), options.port)
         logger.addHandler(gui.GuiLogHandler(win))

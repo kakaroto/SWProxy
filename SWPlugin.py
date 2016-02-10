@@ -29,7 +29,7 @@ class SWPlugin(IPlugin.IPlugin):
             cls._plugins = cls.load_plugins()
         return cls._plugins
 
-    def process_request(self, req_json, resp_json, plugins):
+    def process_request(self, req_json, resp_json):
         pass
 
     def process_csv_row(self, csv_type, data_type, data):
@@ -42,4 +42,4 @@ class SWPlugin(IPlugin.IPlugin):
                 getattr(plugin.plugin_object, func_name)(*args)
             except Exception as e:
                 logging.exception('Exception while executing plugin "%s": %s' \
-                                  % (plugin.plugin_name, e))
+                                  % (plugin.name, e))
