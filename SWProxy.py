@@ -29,66 +29,54 @@ class HTTP(proxy.TCP):
         logger.debug('Started process {} to handle connection {}'.format(proc, client.conn))
 
 
-class ProxyCallback(object):
+class SWProxyCallback(object):
 
     def __init__(self):
-        self.host = None
-        self.port = 0
         self.request = None
 
     def onRequest(self, proxy, host, port, request):
-        self.host = host
-        self.port = port
-
-    def onResponse(self, proxy, response):
-        pass 
-
-    def onDone(self, proxy):
-        pass
-
-
-class SWProxyCallback(ProxyCallback):
-
-    is_com2us_api = lambda self: all((
-        self.host,
-        self.host.startswith('summonerswar'),
-        self.host.endswith('com2us.net'),
-        self.request,
-        self.request.url.path.startswith('/api/'),
-    ))
-
-    def onRequest(self, proxy, host, port, request):
-        super(SWProxyCallback, self).onRequest(proxy, host, port, request)
-        self.request = request  # store request for retrieval later
-
-    def onResponse(self, proxy, response):
-        
         try:
-            if self.request and self.is_com2us_api():
-                
-                req_plain, req_json = self.parse_request(self.request)
-                resp_plain, resp_json = self.parse_response(response)
+            if host.startswith('summonerswar') and host.endswith('com2us.net') and request.url.path.startswith('/api/'):
+                self.request = request  # if we care about this api call, store request for decryption later
+        except AttributeError:
+            pass
 
-                if 'command' not in resp_json:
-                    return
+    def onResponse(self, proxy, response):
 
-                try:
-                    SWPlugin.call_plugins('process_request', (req_json, resp_json))
-                except Exception as e:
-                    logger.exception('Exception while executing plugin : {}'.format(e))
+        if self.request is None:
+            # we have not obtained a valid request yet
+            return
+
+        try:
+            req_plain, req_json = self._parse_request(self.request)
+            resp_plain, resp_json = self._parse_response(response)
+
+            if 'command' not in resp_json:
+                # we only want apis that are commands
+                self.request = None
+                return
+
+            try:
+                SWPlugin.call_plugins('process_request', (req_json, resp_json))
+            except Exception as e:
+                logger.exception('Exception while executing plugin : {}'.format(e))
 
         except Exception as e:
             logger.debug('unknown exception: {}'.format(e))
 
-    def parse_request(self, request):
+    def onDone(self, proxy):
+        pass
+
+    def _parse_request(self, request):
         """ takes a request, returns the decrypted plain and json """
         plain = decrypt_request(request.body)
         return plain, json.loads(plain)
 
-    def parse_response(self, response):
+    def _parse_response(self, response):
         """ takes a response body, returns the decrypted plain and json """
         plain = decrypt_response(response.body)
         return plain, json.loads(plain)
+
 
 def get_external_ip():
     # ref: http://stackoverflow.com/a/1267524
@@ -109,7 +97,8 @@ def read_file_lines(fpath):
         logger.debug('Failed to read file at {}'.format(fpath))
         return ''
 
-def usage():
+
+def get_usage_text():
     authors_text = read_file_lines('AUTHORS')
 
     lines = []
@@ -140,6 +129,7 @@ def start_proxy_server(options):
     except KeyboardInterrupt:
         pass
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SWParser')
     parser.add_argument('-d', '--debug', action="store_true", default=False)
@@ -152,13 +142,15 @@ if __name__ == "__main__":
     logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
     logger.setLevel(logging.INFO)
 
-    print usage()
+    print get_usage_text()
+
+    # attempt to load gui; fallback if import error
     if not options.no_gui:
         try:
             # Import here to avoid importing QT in CLI mode
             from SWParser.gui import gui
             from PyQt4.QtGui import QApplication
-        except:
+        except ImportError:
             print "Failed to load GUI dependencies. Switching to CLI mode"
             options.no_gui = True
 
