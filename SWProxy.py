@@ -153,16 +153,19 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
     print usage()
+    if not options.no_gui:
+        try:
+            # Import here to avoid importing QT in CLI mode
+            from SWParser.gui import gui
+            from PyQt4.QtGui import QApplication
+        except:
+            print "Failed to load GUI dependencies. Switching to CLI mode"
+            options.no_gui = True
 
     if options.no_gui:
         logger.addHandler(logging.StreamHandler())
         start_proxy_server(options)
     else:
-        # Import here to avoid importing QT in CLI mode
-        from SWParser.gui import gui
-        from PyQt4.QtGui import QApplication
-
-        logging.basicConfig(level="INFO", filename="proxy.log", format='%(levelname)s - %(message)s')
         app = QApplication(sys.argv)
         win = gui.MainWindow(get_external_ip(), options.port)
         logger.addHandler(gui.GuiLogHandler(win))

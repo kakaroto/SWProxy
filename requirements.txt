@@ -1,3 +1,4 @@
 pycrypto 
 dpkt 
 yapsy
+PyQt4
