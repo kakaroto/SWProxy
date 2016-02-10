@@ -1,5 +1,6 @@
 import SWPlugin
 from SWParser.parser import monster_attribute
+import logging
 
 logger = logging.getLogger("SWProxy")
 
