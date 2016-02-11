@@ -1,7 +1,7 @@
+from SWProxy import *
 from yapsy import IPlugin
 from yapsy.PluginManager import PluginManager
 import os
-import sys
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,9 +44,3 @@ class SWPlugin(IPlugin.IPlugin):
             except Exception as e:
                 logging.exception('Exception while executing plugin "%s": %s' \
                                   % (plugin.name, e))
-
-def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-
-    return os.path.join(os.path.abspath("."), relative_path)

@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import proxy
-from SWPlugin import SWPlugin, resource_path
+from SWPlugin import *
 import socket
 import sys
 import argparse
@@ -164,3 +164,12 @@ if __name__ == "__main__":
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())
+
+
+def resource_path(relative_path):
+    # function to locate data files for pyinstaller single file executable
+    # ref: http://stackoverflow.com/a/32048136
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+
+    return os.path.join(os.path.abspath("."), relative_path)
