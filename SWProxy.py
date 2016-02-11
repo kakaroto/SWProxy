@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import proxy
-from SWPlugin import SWPlugin
+from SWPlugin import SWPlugin, resource_path
 import socket
 import sys
 import argparse
@@ -87,10 +87,11 @@ def get_external_ip():
     except KeyError:
         # fallback on error
         return socket.gethostbyname(socket.gethostname())
-    
+
 
 def read_file_lines(fpath):
     try:
+        fpath = resource_path(fpath)
         with open(fpath, 'r') as fh:
             return map(lambda x:x.strip(), fh.readlines())
     except Exception:
