@@ -78,8 +78,11 @@ class SWProxyCallback(object):
         return plain, json.loads(plain)
 
 
-def get_external_ip():
+def get_external_ip(options):
     # ref: http://stackoverflow.com/a/1267524
+    if options.host is not None:
+        return options.host
+
     try:
         sockets = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
         ips = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], sockets) if l]
@@ -120,7 +123,7 @@ def get_usage_text():
 
 def start_proxy_server(options):
 
-    my_ip = get_external_ip()
+    my_ip = get_external_ip(options)
 
     try:
         print "Running Proxy server at {} on port {}".format(my_ip, options.port)
@@ -134,6 +137,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SWParser')
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
+    parser.add_argument('-o', '--host', help="Host", default=None)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
     options = parser.parse_args()
 
@@ -159,7 +163,7 @@ if __name__ == "__main__":
         start_proxy_server(options)
     else:
         app = QApplication(sys.argv)
-        win = gui.MainWindow(get_external_ip(), options.port)
+        win = gui.MainWindow(get_external_ip(options), options.port)
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())
