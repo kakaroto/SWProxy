@@ -30,7 +30,7 @@ def parse_login_data(data):
         "Unknown Scrolls": (9, 1),
         "Mystical Scrolls": (9, 2),
         "Light & Darkness Scrolls": (9, 3),
-        "Legendary Scrolls": (9, 7),
+        "? Scrolls(maybe Legendary?)": (9, 7),
         "Exclusive Summons": (9, 8),
         "Legendary Summoning Pieces": (9, 9),
         "Light & Dark Summoning Pieces": (9, 10),
