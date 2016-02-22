@@ -28,9 +28,9 @@ def parse_login_data(data):
 
     inventory_map = {
         "Unknown Scrolls": (9, 1),
-        "? Scrolls(maybe mystical?)": (9, 2),
-        "? Scrolls(maybe legendary?)": (9, 3),
-        "? Scrolls(maybe L&D?)": (9, 7),
+        "Mystical Scrolls": (9, 2),
+        "Light & Darkness Scrolls": (9, 3),
+        "Legendary Scrolls": (9, 7),
         "Exclusive Summons": (9, 8),
         "Legendary Summoning Pieces": (9, 9),
         "Light & Dark Summoning Pieces": (9, 10),
