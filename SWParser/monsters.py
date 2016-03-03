@@ -741,6 +741,20 @@ monsters_name_map = {
     "20914": "Lucien",
     "20915": "Isillen",
 
+    "210": "Harg",
+    "21011": "Remy",
+    "21012": "Racuni",
+    "21013": "Raviti",
+    "21014": "Dova",
+    "21015": "Kroa",
+
+    "211": "Fairy King",
+    "21111": "Psamathe",
+    "21112": "Daphnis",
+    "21113": "Ganymede",
+    "21114": "Oberon",
+    "21115": "Nyx",
+
     "15105": "Devilmon",
     "14314": "Rainbowmon"
 }
