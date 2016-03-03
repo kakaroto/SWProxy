@@ -119,8 +119,10 @@ def get_usage_text():
 
 
 def start_proxy_server(options):
-
-    my_ip = get_external_ip()
+    if options.host:
+        my_ip = options.host
+    else:
+        my_ip = get_external_ip()
 
     try:
         print "Running Proxy server at {} on port {}".format(my_ip, options.port)
@@ -134,6 +136,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SWParser')
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
+    parser.add_argument('-o', '--host', help="Host", default=None)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
     options = parser.parse_args()
 
@@ -158,8 +161,13 @@ if __name__ == "__main__":
         logger.addHandler(logging.StreamHandler())
         start_proxy_server(options)
     else:
+        if options.host:
+            my_ip = options.host
+        else:
+            my_ip = get_external_ip()
+
         app = QApplication(sys.argv)
-        win = gui.MainWindow(get_external_ip(), options.port)
+        win = gui.MainWindow(my_ip, options.port)
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())
