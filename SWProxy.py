@@ -119,6 +119,15 @@ def get_usage_text():
     return "\n".join(lines)
 
 
+def resource_path(relative_path):
+    # function to locate data files for pyinstaller single file executable
+    # ref: http://stackoverflow.com/a/32048136
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+
+    return os.path.join(os.path.abspath("."), relative_path)
+
+
 def start_proxy_server(options):
 
     my_ip = get_external_ip()
@@ -150,7 +159,8 @@ if __name__ == "__main__":
         try:
             # Import here to avoid importing QT in CLI mode
             from SWParser.gui import gui
-            from PyQt4.QtGui import QApplication
+            from PyQt4.QtGui import QApplication, QIcon
+            from PyQt4.QtCore import QSize
         except ImportError:
             print "Failed to load GUI dependencies. Switching to CLI mode"
             options.no_gui = True
@@ -160,16 +170,16 @@ if __name__ == "__main__":
         start_proxy_server(options)
     else:
         app = QApplication(sys.argv)
+		# set the icon
+        icons_path = os.path.join(os.getcwd(), resource_path("icons/"))
+        app_icon = QIcon()
+        app_icon.addFile(icons_path +'16x16.png', QSize(16,16))
+        app_icon.addFile(icons_path + '24x24.png', QSize(24,24))
+        app_icon.addFile(icons_path + '32x32.png', QSize(32,32))
+        app_icon.addFile(icons_path + '48x48.png', QSize(48,48))
+        app_icon.addFile(icons_path + '256x256.png', QSize(256,256))
+        app.setWindowIcon(app_icon)
         win = gui.MainWindow(get_external_ip(), options.port)
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())
-
-
-def resource_path(relative_path):
-    # function to locate data files for pyinstaller single file executable
-    # ref: http://stackoverflow.com/a/32048136
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-
-    return os.path.join(os.path.abspath("."), relative_path)
