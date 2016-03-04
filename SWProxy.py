@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import proxy
-from SWPlugin import SWPlugin
+from SWPlugin import *
 import socket
 import sys
 import argparse
@@ -87,10 +87,11 @@ def get_external_ip():
     except KeyError:
         # fallback on error
         return socket.gethostbyname(socket.gethostname())
-    
+
 
 def read_file_lines(fpath):
     try:
+        fpath = resource_path(fpath)
         with open(fpath, 'r') as fh:
             return map(lambda x:x.strip(), fh.readlines())
     except Exception:
@@ -163,3 +164,12 @@ if __name__ == "__main__":
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())
+
+
+def resource_path(relative_path):
+    # function to locate data files for pyinstaller single file executable
+    # ref: http://stackoverflow.com/a/32048136
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+
+    return os.path.join(os.path.abspath("."), relative_path)

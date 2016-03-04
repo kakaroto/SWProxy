@@ -1,3 +1,4 @@
+from SWProxy import *
 from yapsy import IPlugin
 from yapsy.PluginManager import PluginManager
 import os
@@ -17,7 +18,7 @@ class SWPlugin(IPlugin.IPlugin):
     @classmethod
     def load_plugins(cls):
         manager = PluginManager()
-        manager.setPluginPlaces([os.path.join(os.getcwd(), "plugins/")])
+        manager.setPluginPlaces([os.path.join(os.getcwd(), resource_path("plugins/"))])
         manager.collectPlugins()
         ret = manager.getAllPlugins()
         logger.info('Loaded {} plugins'.format(len(ret)))
