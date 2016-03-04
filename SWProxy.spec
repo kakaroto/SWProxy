@@ -2,13 +2,10 @@
 
 block_cipher = None
 
-
 a = Analysis(['SWProxy.py'],
              pathex=['.'],
              binaries=None,
-             datas=[ ('plugins/*.py', 'plugins'),
-                     ('plugins/*.yapsy-plugin', 'plugins'),
-                     ('AUTHORS', '.') ],
+             datas=[('AUTHORS', '.') ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -23,6 +20,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
+          plugins_toc,
           name='SWProxy',
           debug=False,
           strip=False,
