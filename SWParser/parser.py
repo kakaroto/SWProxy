@@ -152,6 +152,17 @@ def rune_set_id(id):
     else:
         return "???"
 
+def map_craft(craft, craft_id):
+    type_str = str(craft['craft_type_id'])
+    return  {
+        'id': craft_id,
+        'item_id': craft['craft_item_id'],
+        'type': 'E' if craft['craft_type'] == 1 else 'G',
+        'set':  rune_set_id(int(type_str[:-4])),
+        'stat': rune_effect_type(int(type_str[-4:-2])),
+        'grade': int(type_str[-1:])
+    }
+
 def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     cvs_map ={
         'slot': rune['slot_no'],
