@@ -21,9 +21,8 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          plugins_toc,
           name='SWProxy',
           debug=False,
           strip=False,
           upx=True,
-          console=False )
+          console=True )
