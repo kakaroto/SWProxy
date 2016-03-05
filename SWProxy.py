@@ -9,6 +9,7 @@ from SWPlugin import *
 import socket
 import sys
 import argparse
+import struct
 
 VERSION = "0.98"
 GITHUB = 'https://github.com/kakaroto/SWProxy'
@@ -78,10 +79,43 @@ class SWProxyCallback(object):
 
 
 def get_external_ip():
+    # ref: http://stackoverflow.com/a/819420
+    def make_mask(n):
+        """return a mask of n bits as a long integer"""
+        return (2L<<n-1) - 1
+
+    def dotted_quad_to_num(ip):
+        """convert decimal dotted quad string to long integer"""
+        return struct.unpack('L',socket.inet_aton(ip))[0]
+
+    def network_mask(ip,bits):
+        """Convert a network address to a long integer"""
+        return dotted_quad_to_num(ip) & make_mask(bits)
+
+    def address_in_network(ip, ip_net, bits):
+        """Is an address in a network"""
+        address = dotted_quad_to_num(ip)
+        net = network_mask(ip_net, bits)
+        return address & net == net
+
+    def priority(ip):
+        """0 for the most common local network addresses, 1 for other local network addresses, 2 for other addresses"""
+        if address_in_network(ip, "192.168.1.0", 24):
+            return 0
+        if address_in_network(ip,"192.168.0.0", 16):
+            return 1
+        return 2
+
     # ref: http://stackoverflow.com/a/1267524
+    # excluding reserved ip ranges defined on http://tools.ietf.org/html/rfc5735
     try:
         sockets = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
-        ips = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], sockets) if l]
+        ordered_list = sorted(socket.gethostbyname_ex(socket.gethostname())[2], key=priority)
+        ips = [l for l in ([ip for ip in ordered_list if
+                            not address_in_network(ip, "127.0.0.0", 8) and not address_in_network(ip, "169.254.0.0",16) and
+                            not address_in_network(ip, "172.16.0.0", 12) and not address_in_network(ip, "192.0.0.0", 12) and
+                            not address_in_network(ip, "192.0.2.0", 24) and not address_in_network(ip, "192.88.99.0", 24) and
+                            not address_in_network(ip, "198.18.0.0", 15)][:1], sockets) if l]
         return ips[0][0]
     except KeyError:
         # fallback on error
