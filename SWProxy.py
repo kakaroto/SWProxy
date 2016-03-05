@@ -94,9 +94,12 @@ def get_external_ip():
 
     def address_in_network(ip, ip_net, bits):
         """Is an address in a network"""
-        address = dotted_quad_to_num(ip)
-        net = network_mask(ip_net, bits)
-        return address & net == net
+        try:
+            address = dotted_quad_to_num(ip)
+            net = network_mask(ip_net, bits)
+            return address & net == net
+        except:
+            return False
 
     def priority(ip):
         """0 for the most common local network addresses, 1 for other local network addresses, 2 for other addresses"""
