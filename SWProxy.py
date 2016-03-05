@@ -10,10 +10,9 @@ import socket
 import sys
 import argparse
 
-VERSION = "0.97"
-GITHUB = 'https://github.com/kakaroto/SWParser'
+VERSION = "0.98"
+GITHUB = 'https://github.com/kakaroto/SWProxy'
 logger = logging.getLogger("SWProxy")
-
 
 class HTTP(proxy.TCP):
     """
@@ -170,7 +169,7 @@ if __name__ == "__main__":
         start_proxy_server(options)
     else:
         app = QApplication(sys.argv)
-		# set the icon
+        # set the icon
         icons_path = os.path.join(os.getcwd(), resource_path("icons/"))
         app_icon = QIcon()
         app_icon.addFile(icons_path +'16x16.png', QSize(16,16))
