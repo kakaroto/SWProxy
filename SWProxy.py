@@ -11,7 +11,7 @@ import sys
 import argparse
 import struct
 
-VERSION = "0.98"
+VERSION = "0.99"
 GITHUB = 'https://github.com/kakaroto/SWProxy'
 logger = logging.getLogger("SWProxy")
 
@@ -69,12 +69,12 @@ class SWProxyCallback(object):
 
     def _parse_request(self, request):
         """ takes a request, returns the decrypted plain and json """
-        plain = decrypt_request(request.body)
+        plain = decrypt_request(request.body, 2 if '_c2.php' in self.request.url.path else 1)
         return plain, json.loads(plain)
 
     def _parse_response(self, response):
         """ takes a response body, returns the decrypted plain and json """
-        plain = decrypt_response(response.body)
+        plain = decrypt_response(response.body, 2 if '_c2.php' in self.request.url.path else 1)
         return plain, json.loads(plain)
 
 
@@ -105,7 +105,7 @@ def get_external_ip():
         """0 for the most common local network addresses, 1 for other local network addresses, 2 for other addresses"""
         if address_in_network(ip, "192.168.1.0", 24):
             return 0
-        if address_in_network(ip,"192.168.0.0", 16):
+        if address_in_network(ip, "192.168.0.0", 16):
             return 1
         return 2
 
@@ -115,14 +115,18 @@ def get_external_ip():
         sockets = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
         ordered_list = sorted(socket.gethostbyname_ex(socket.gethostname())[2], key=priority)
         ips = [l for l in ([ip for ip in ordered_list if
-                            not address_in_network(ip, "127.0.0.0", 8) and not address_in_network(ip, "169.254.0.0",16) and
+                            not address_in_network(ip, "127.0.0.0", 8) and not address_in_network(ip, "169.254.0.0", 16) and
                             not address_in_network(ip, "172.16.0.0", 12) and not address_in_network(ip, "192.0.0.0", 12) and
                             not address_in_network(ip, "192.0.2.0", 24) and not address_in_network(ip, "192.88.99.0", 24) and
                             not address_in_network(ip, "198.18.0.0", 15)][:1], sockets) if l]
         return ips[0][0]
-    except KeyError:
-        # fallback on error
-        return socket.gethostbyname(socket.gethostname())
+    except (KeyError, socket.gaierror):
+        try:
+            # first fallback
+            return socket.gethostbyname(socket.gethostname())
+        except (KeyError, socket.gaierror):
+            # sometimes, this just works, fixed OSX
+            return sockets[0]
 
 
 def read_file_lines(fpath):

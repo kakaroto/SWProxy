@@ -5,3 +5,4 @@
 *.pcap
 *.pyc
 smon_decryptor.py
+proxy.log
