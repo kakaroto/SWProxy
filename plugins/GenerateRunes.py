@@ -22,6 +22,10 @@ def parse_login_data(data):
         runes = data['runes']
     except:
         runes = []
+    try:
+        crafts = data['rune_craft_item_list']
+    except:
+        crafts = []
 
     if isinstance(runes, dict):
         runes = runes.values()
@@ -68,6 +72,8 @@ def parse_login_data(data):
                                      1 - ((mon['unit_master_id'] / 10) % 10), mon['unit_id']))
 
     runes.sort(key = lambda r: (r['set_id'], r['slot_no']))
+
+    crafts.sort(key = lambda c: (c['craft_type'], c['craft_item_id']))
 
     with open(str(wizard['wizard_id']) + ".json", "w") as f:
         f.write(json.dumps(data, indent=4))
@@ -125,10 +131,17 @@ def parse_login_data(data):
     optimizer = {
         "runes": [],
         "mons": [],
+        "crafts": [],
         "savedBuilds": [],
     }
+
     rune_id_mapping = {}
     monster_id_mapping = {}
+
+    craft_id = 1
+    for craft in crafts:
+        optimizer['crafts'].append(map_craft(craft, craft_id))
+        craft_id += 1
 
     rune_id = 1
     for rune in runes:

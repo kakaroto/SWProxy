@@ -152,6 +152,17 @@ def rune_set_id(id):
     else:
         return "???"
 
+def map_craft(craft, craft_id):
+    type_str = str(craft['craft_type_id'])
+    return  {
+        'id': craft_id,
+        'item_id': craft['craft_item_id'],
+        'type': 'E' if craft['craft_type'] == 1 else 'G',
+        'set':  rune_set_id(int(type_str[:-4])),
+        'stat': rune_effect_type(int(type_str[-4:-2])),
+        'grade': int(type_str[-1:])
+    }
+
 def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
     cvs_map ={
         'slot': rune['slot_no'],
@@ -201,14 +212,6 @@ def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
             "m_v": rune['pri_eff'][1],
             "i_t": rune_effect_type(rune['prefix_eff'][0]),
             "i_v": rune['prefix_eff'][1],
-            "s1_t": rune_effect_type(rune['sec_eff'][0][0]) if len(rune['sec_eff']) >= 1 else "",
-            "s1_v": rune['sec_eff'][0][1] + rune['sec_eff'][0][3] if len(rune['sec_eff']) >= 1 else 0,
-            "s2_t": rune_effect_type(rune['sec_eff'][1][0]) if len(rune['sec_eff']) >= 2 else "",
-            "s2_v": rune['sec_eff'][1][1] + rune['sec_eff'][1][3] if len(rune['sec_eff']) >= 2 else 0,
-            "s3_t": rune_effect_type(rune['sec_eff'][2][0]) if len(rune['sec_eff']) >= 3 else "",
-            "s3_v": rune['sec_eff'][2][1] + rune['sec_eff'][2][3] if len(rune['sec_eff']) >= 3 else 0,
-            "s4_t": rune_effect_type(rune['sec_eff'][3][0]) if len(rune['sec_eff']) >= 4 else "",
-            "s4_v": rune['sec_eff'][3][1] + rune['sec_eff'][3][3] if len(rune['sec_eff']) >= 4 else 0,
             "locked":0,
             "sub_res": subs['RES'],
             "sub_cdmg": subs['CDmg'],
@@ -222,6 +225,11 @@ def map_rune(rune, rune_id, monster_id=0, monster_uid=0):
             "sub_spd": subs['SPD'],
             "sub_crate": subs['CRate']}
 
+    for sub in range(0,4):
+        optimizer_map['s%s_t' % (sub + 1)] = rune_effect_type(rune['sec_eff'][sub][0]) if len(rune['sec_eff']) >= sub + 1 else ""
+        optimizer_map['s%s_v' % (sub + 1)] = rune['sec_eff'][sub][1] + rune['sec_eff'][sub][3] if len(rune['sec_eff']) >= sub + 1 else 0
+        optimizer_map['s%s_data' % (sub + 1)] = {"enchanted":  rune['sec_eff'][sub][2] == 1,
+                                           "gvalue": rune['sec_eff'][sub][3]} if len(rune['sec_eff']) >= sub + 1 else {}
     return optimizer_map, cvs_map
 
 def map_monster(monster, monster_id_mapping, storage_id, wizard_name=None):
