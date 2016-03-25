@@ -69,12 +69,12 @@ class SWProxyCallback(object):
 
     def _parse_request(self, request):
         """ takes a request, returns the decrypted plain and json """
-        plain = decrypt_request(request.body)
+        plain = decrypt_request(request.body, 2 if '_c2.php' in self.request.url.path else 1)
         return plain, json.loads(plain)
 
     def _parse_response(self, response):
         """ takes a response body, returns the decrypted plain and json """
-        plain = decrypt_response(response.body)
+        plain = decrypt_response(response.body, 2 if '_c2.php' in self.request.url.path else 1)
         return plain, json.loads(plain)
 
 
