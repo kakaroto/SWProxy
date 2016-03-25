@@ -67,7 +67,7 @@ If you do not have the 'pip' command installed, use 'sudo -H easy_install pycryp
 
 Now you should be able to start the proxy. Simply run the following command: `python SWProxy.py`. If all went fine, you should see the following message:
 
-	SWParser v0.98 - Summoners War Proxy
+	SWParser v0.99 - Summoners War Proxy
 		Written by KaKaRoTo
 
 	Licensed under LGPLv3 and available at : 

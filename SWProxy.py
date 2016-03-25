@@ -11,7 +11,7 @@ import sys
 import argparse
 import struct
 
-VERSION = "0.98"
+VERSION = "0.99"
 GITHUB = 'https://github.com/kakaroto/SWProxy'
 logger = logging.getLogger("SWProxy")
 
