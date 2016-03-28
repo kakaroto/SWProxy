@@ -130,7 +130,11 @@ def get_external_ip():
 
 
 def get_external_ip_v2():
-    return ip4_addresses()[0]
+    """ returns None if no ip was detected via this method """
+    try:
+        return ip4_addresses()[0]
+    except IndexError:
+        return None
 
 
 def ip4_addresses():
@@ -146,9 +150,6 @@ def ip4_addresses():
         ip_list.remove('127.0.0.1')
     return ip_list
 
-
-# returns a list, first address is likely the correct one
-print ip4_addresses()
 
 def read_file_lines(fpath):
     try:
@@ -192,6 +193,13 @@ def resource_path(relative_path):
 def start_proxy_server(options):
 
     my_ip = get_external_ip_v2() if options.ipdetect2 else get_external_ip()
+
+    if not my_ip:
+        # failed to find ip, give them another option
+        if options.ipdetect2:
+            raise Exception('Unable to detect ip address, perhaps remove --ipdetect2')
+        else:
+            raise Exception('Unable to detect ip address, perhaps try --ipdetect2')
 
     try:
         print "Running Proxy server at {} on port {}".format(my_ip, options.port)
