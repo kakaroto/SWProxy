@@ -1,0 +1,7 @@
+[Core]
+Name = SWARFARM Export Plugin
+Module = SwarfarmExportPlugin
+
+[Documentation]
+Version = 1.0
+Description = Export data from the capture for upload on swarfarm.com/data
