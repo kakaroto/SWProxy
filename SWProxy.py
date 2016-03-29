@@ -79,54 +79,8 @@ class SWProxyCallback(object):
 
 
 def get_external_ip():
-    # ref: http://stackoverflow.com/a/819420
-    def make_mask(n):
-        """return a mask of n bits as a long integer"""
-        return (2L<<n-1) - 1
-
-    def dotted_quad_to_num(ip):
-        """convert decimal dotted quad string to long integer"""
-        return struct.unpack('L',socket.inet_aton(ip))[0]
-
-    def network_mask(ip,bits):
-        """Convert a network address to a long integer"""
-        return dotted_quad_to_num(ip) & make_mask(bits)
-
-    def address_in_network(ip, ip_net, bits):
-        """Is an address in a network"""
-        try:
-            address = dotted_quad_to_num(ip)
-            net = network_mask(ip_net, bits)
-            return address & net == net
-        except:
-            return False
-
-    def priority(ip):
-        """0 for the most common local network addresses, 1 for other local network addresses, 2 for other addresses"""
-        if address_in_network(ip, "192.168.1.0", 24):
-            return 0
-        if address_in_network(ip, "192.168.0.0", 16):
-            return 1
-        return 2
-
-    # ref: http://stackoverflow.com/a/1267524
-    # excluding reserved ip ranges defined on http://tools.ietf.org/html/rfc5735
-    try:
-        sockets = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
-        ordered_list = sorted(socket.gethostbyname_ex(socket.gethostname())[2], key=priority)
-        ips = [l for l in ([ip for ip in ordered_list if
-                            not address_in_network(ip, "127.0.0.0", 8) and not address_in_network(ip, "169.254.0.0", 16) and
-                            not address_in_network(ip, "172.16.0.0", 12) and not address_in_network(ip, "192.0.0.0", 12) and
-                            not address_in_network(ip, "192.0.2.0", 24) and not address_in_network(ip, "192.88.99.0", 24) and
-                            not address_in_network(ip, "198.18.0.0", 15)][:1], sockets) if l]
-        return ips[0][0]
-    except (KeyError, socket.gaierror):
-        try:
-            # first fallback
-            return socket.gethostbyname(socket.gethostname())
-        except (KeyError, socket.gaierror):
-            # sometimes, this just works, fixed OSX
-            return sockets[0]
+    my_ip = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]][0]
+    return my_ip
 
 
 def read_file_lines(fpath):
