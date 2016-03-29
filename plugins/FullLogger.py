@@ -1,0 +1,1 @@
+plugins/FullLogger.py
