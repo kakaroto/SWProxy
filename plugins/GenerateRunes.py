@@ -121,6 +121,8 @@ def parse_login_data(data):
         "mons": [],
         "crafts": [],
         "savedBuilds": [],
+        "tvalue": data["tvalue"],
+        "wizard_id": wizard["wizard_id"]
     }
 
     rune_id_mapping = {}
