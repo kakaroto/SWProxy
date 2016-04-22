@@ -83,6 +83,28 @@ def get_external_ip():
     return my_ip
 
 
+def get_external_ip_v2():
+    """ returns None if no ip was detected via this method """
+    try:
+        return ip4_addresses()[0]
+    except IndexError:
+        return None
+
+
+def ip4_addresses():
+    from netifaces import interfaces, ifaddresses, AF_INET
+    ip_list = []
+    for interface in interfaces():
+        try:
+            for link in ifaddresses(interface)[AF_INET]:
+                ip_list.append(link['addr'])
+        except KeyError:
+            continue
+    if '127.0.0.1' in ip_list:
+        ip_list.remove('127.0.0.1')
+    return ip_list
+
+
 def read_file_lines(fpath):
     try:
         fpath = resource_path(fpath)
@@ -124,7 +146,14 @@ def resource_path(relative_path):
 
 def start_proxy_server(options):
 
-    my_ip = get_external_ip()
+    my_ip = get_external_ip_v2() if options.ipdetect2 else get_external_ip()
+
+    if not my_ip:
+        # failed to find ip, give them another option
+        if options.ipdetect2:
+            raise Exception('Unable to detect ip address, perhaps remove --ipdetect2')
+        else:
+            raise Exception('Unable to detect ip address, perhaps try --ipdetect2')
 
     try:
         print "Running Proxy server at {} on port {}".format(my_ip, options.port)
@@ -139,6 +168,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=8080, nargs='+')
+    parser.add_argument('--ipdetect2', action="store_true", help='Use our v2 IP detection')
     options = parser.parse_args()
 
     # Set up logger
