@@ -45,7 +45,8 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMessageBox.about(self, "About", "SWProxy: Summoners War Proxy Tool\nWritten by KaKaRoTo\n\nLicensed under LGPLv3 and available at : \n\thttps://github.com/kakaroto/SWParser\n")
 
     def openPCAP(self):
-        QtGui.QMessageBox.about(self, "Open PCAP", "Not yet implemented")
+        pcap_file = QtGui.QFileDialog.getOpenFileName()
+        SWProxy.parse_pcap(pcap_file)
 
     def log(self, str):
         self.ui.logWindow.addItem(str)
