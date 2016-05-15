@@ -170,6 +170,12 @@ class HttpParser(object):
         if self.state == HTTP_PARSER_STATE_HEADERS_COMPLETE and \
            ((self.type == HTTP_REQUEST_PARSER and \
             not self.method == b"POST") or \
+            #aureus - 2016-06-14 - nasty hack fix to get around iOS issue
+            #remove this when actual fix is found
+            (self.type == HTTP_REQUEST_PARSER and \
+             self.method == b'POST' and \
+             self.url.netloc.endswith('qpyou.cn')) or \
+            #end nasty hack fix
             (self.type == HTTP_RESPONSE_PARSER and \
              b'content-length' not in self.headers and \
              b'transfer-encoding' not in self.headers)) and \
