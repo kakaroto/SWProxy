@@ -2,6 +2,7 @@ from yapsy import IPlugin
 from yapsy.PluginManager import PluginManager
 import os
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +17,15 @@ class SWPlugin(IPlugin.IPlugin):
 
     @classmethod
     def load_plugins(cls):
+        basepath = os.path.dirname(os.path.realpath(__file__))
+
+        # if frozen (i.e. running from pyinstaller binary)
+        # grab path from sys.executable.  Else use the path of this file
+        if getattr(sys, 'frozen', False):
+            basepath = os.path.dirname(os.path.realpath(sys.executable))
+
         manager = PluginManager()
-        manager.setPluginPlaces([os.path.join(os.getcwd(), "plugins/")])
+        manager.setPluginPlaces([os.path.join(basepath, "plugins/")])
         manager.collectPlugins()
         ret = manager.getAllPlugins()
         logger.info('Loaded {} plugins'.format(len(ret)))
