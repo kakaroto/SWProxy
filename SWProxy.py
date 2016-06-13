@@ -37,7 +37,7 @@ class SWProxyCallback(object):
 
     def onRequest(self, proxy, host, port, request):
         try:
-            if host.startswith('summonerswar') and host.endswith('com2us.net') and request.url.path.startswith('/api/'):
+            if request.url.path.startswith('/api/'):
                 self.request = request  # if we care about this api call, store request for decryption later
         except AttributeError:
             pass
