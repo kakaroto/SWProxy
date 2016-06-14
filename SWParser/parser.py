@@ -263,6 +263,7 @@ def map_monster(monster, monster_id_mapping, storage_id, wizard_name=None):
                                               " (In Storage)" if monster['building_id'] == storage_id else ""),
                              "level": monster['unit_level'],
                              "unit_id": monster['unit_id'],
+                             "master_id": monster['unit_master_id'],
                              "stars": monster['class'],
                              "attribute": monster_attribute(monster['attribute']),
                              "b_hp": int(monster['con']) * 15,
