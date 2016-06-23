@@ -38,7 +38,7 @@ monsters_name_map = {
     "10611": "Tarq",
     "10612": "Sieq",
     "10613": "Gamir",
-    "10614": "Samar",
+    "10614": "Shamar",
     "10615": "Shumar",
 
     "107": "Warbear",
@@ -115,7 +115,7 @@ monsters_name_map = {
     "11711": "Purian",
     "11712": "Tagaros",
     "11713": "Anduril",
-    "11714": "Eludian",
+    "11714": "Eludain",
     "11715": "Drogan",
 
     "118": "Sylph",
