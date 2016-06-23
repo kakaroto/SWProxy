@@ -459,7 +459,7 @@ monsters_name_map = {
     "16812": "Mei Hou Wang",
     "16813": "Xing Zhe",
     "16814": "Qitian Dasheng",
-    "16815": "Song Zhang Lao",
+    "16815": "Son Zhang Lao",
 
     "169": "Samurai",
     "16911": "Kaz",
@@ -638,7 +638,7 @@ monsters_name_map = {
 
     "195": "Charger Shark",
     "19511": "Aqcus",
-    "19512": "Ignicius",
+    "19512": "Ignicus",
     "19513": "Zephicus",
     "19514": "Rumicus",
     "19515": "Calicus",
@@ -755,13 +755,13 @@ monsters_name_map = {
     "21114": "Oberon",
     "21115": "Nyx",
 
-	"212": "Panda Warrior",
+    "212": "Panda Warrior",
     "21211": "Mo Long",
     "21212": "Xiong Fei",
     "21213": "Feng Yan",
     "21214": "Tian Lang",
     "21215": "Mi Ying",
-	
+
     "15105": "Devilmon",
     "14314": "Rainbowmon"
 }
