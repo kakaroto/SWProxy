@@ -174,7 +174,7 @@ class HttpParser(object):
             #remove this when actual fix is found
             (self.type == HTTP_REQUEST_PARSER and \
              self.method == b'POST' and \
-             self.url.netloc.endswith('qpyou.cn') and not self.url.path.startswith('/api/')) or \
+             (self.url.netloc.endswith('qpyou.cn') or self.url.netloc.endswith('com2us.net')) and not self.url.path.startswith('/api/')) or \
             #end nasty hack fix
             (self.type == HTTP_RESPONSE_PARSER and \
              b'content-length' not in self.headers and \
