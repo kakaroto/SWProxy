@@ -13,7 +13,7 @@ import struct
 import dpkt
 
 
-VERSION = "0.99"
+VERSION = "0.100"
 GITHUB = 'https://github.com/kakaroto/SWProxy'
 logger = logging.getLogger("SWProxy")
 
