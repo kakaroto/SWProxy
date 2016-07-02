@@ -80,7 +80,9 @@ The optional GUI provided requires the `pyqt` package.
 Instal `pyqt` according to your OS's installation procedures (i.e. `brew install pyqt` on OS X) or you can compile it from source:
 
 [PyQt-x11-gpl-4.11.4.tar.gz Linux Source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-x11-gpl-4.11.4.tar.gz)
+
 [PyQt-win-gpl-4.11.4.zip Windows source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-win-gpl-4.11.4.zip)
+
 [PyQt-mac-gpl-4.11.4.tar.gz OS X source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-mac-gpl-4.11.4.tar.gz)
 
 After installing `pyqt`, running `python SWProxy.py` will launch the GUI automatically.
