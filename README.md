@@ -83,6 +83,7 @@ Instal `pyqt` according to your OS's installation procedures (i.e. `brew install
 [PyQt-win-gpl-4.11.4.zip Windows source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-win-gpl-4.11.4.zip)
 [PyQt-mac-gpl-4.11.4.tar.gz OS X source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-mac-gpl-4.11.4.tar.gz)
 
+After installing `pyqt`, running `python SWProxy.py` will launch the GUI automatically.
 
 ## The story of the missing smon_decryptor.py file
 The smon_decryptor.py file is not available for now because it contains the decryption key of the protocol. To avoid people abusing the system or creating bots or anything else that is not permitted by the Com2Us terms of service, I have decided not to make that decryption key available publicly.
