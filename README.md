@@ -75,6 +75,15 @@ Now you should be able to start the proxy. Simply run the following command: `py
 
 	Running Proxy server at 192.168.x.y on port 8080
 
+## GUI
+The optional GUI provided requires the `pyqt` package. 
+Instal `pyqt` according to your OS's installation procedures (i.e. `brew install pyqt` on OS X) or you can compile it from source:
+
+[PyQt-x11-gpl-4.11.4.tar.gz Linux Source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-x11-gpl-4.11.4.tar.gz)
+[PyQt-win-gpl-4.11.4.zip Windows source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-win-gpl-4.11.4.zip)
+[PyQt-mac-gpl-4.11.4.tar.gz OS X source](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt-mac-gpl-4.11.4.tar.gz)
+
+
 ## The story of the missing smon_decryptor.py file
 The smon_decryptor.py file is not available for now because it contains the decryption key of the protocol. To avoid people abusing the system or creating bots or anything else that is not permitted by the Com2Us terms of service, I have decided not to make that decryption key available publicly.
 The binary file smon_decryptor.pyc is provided instead which allows SWProxy and SWParser to still function. That file, as it is only provided as a binary is not licensed under the same terms as the rest of the tool.
