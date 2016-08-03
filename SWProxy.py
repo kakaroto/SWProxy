@@ -34,6 +34,7 @@ class HTTP(proxy.TCP):
 class SWProxyCallback(object):
     def __init__(self):
         self.request = None
+        self.failed_urls = set()
 
     def onRequest(self, proxy, host, port, request):
         try:
@@ -45,6 +46,11 @@ class SWProxyCallback(object):
 
         if self.request is None:
             # we have not obtained a valid request yet
+            return
+
+        if request.url.path in self.failed_urls:
+            # we've tried unsuccessfully before to decrypt a request for this url
+            # lets improve efficiency by skipping the decrypt we know will fail
             return
 
         try:
@@ -62,6 +68,7 @@ class SWProxyCallback(object):
                 logger.exception('Exception while executing plugin : {}'.format(e))
 
         except Exception as e:
+            self.failed_urls.add(request.url.path)  # add this url to a set of urls known to fail
             logger.debug('unknown exception: {}'.format(e))
 
     def onDone(self, proxy):
