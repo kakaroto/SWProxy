@@ -534,11 +534,6 @@ class TCP(object):
     """TCP server implementation."""
 
     def __init__(self, hostname='127.0.0.1', port=8899, backlog=100):
-        # first clean port
-        if isinstance(port, list):
-            port = port[0]
-        if not isinstance(port, int):
-            port = int(port)
         self.port = port
         self.backlog = backlog
         self.hostname = hostname
