@@ -37,7 +37,8 @@ class SWProxyCallback(object):
 
     def onRequest(self, proxy, host, port, request):
         try:
-           self.request = request  # if we care about this api call, store request for decryption later
+            if request.url.path.startswith('/api/gateway'):
+                self.request = request  # if we care about this api call, store request for decryption later
         except AttributeError:
             pass
 
