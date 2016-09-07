@@ -145,6 +145,11 @@ def rune_set_id(id):
         16: "Shield",
         17: "Revenge",
         18: "Destroy",
+        19: "Fight",
+        20: "Determination",
+        21: "Enhance",
+        22: "Accuracy",
+        23: "Tolerance",
     }
 
     if id in name_map:
