@@ -763,5 +763,9 @@ monsters_name_map = {
     "21215": "Mi Ying",
 	
     "15105": "Devilmon",
-    "14314": "Rainbowmon"
+    "14314": "Rainbowmon",
+
+    "1000111": "Homunculus - Water",
+    "1000112": "Homunculus - Fire",
+    "1000113": "Homunculus - Wind"
 }
