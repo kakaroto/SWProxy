@@ -682,7 +682,7 @@ monsters_name_map = {
     "20111": "Emma",
     "20112": "Lisa",
     "20113": "Olivia",
-    "20114": "Illiana",
+    "20114": "Illianna",
     "20115": "Sylvia",
 
     "202": "Martial Artist",
