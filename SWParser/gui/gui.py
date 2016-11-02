@@ -4,6 +4,7 @@ from MainWindow import Ui_MainWindow
 import SWProxy
 import threading
 import logging
+import time
 
 logger = logging.getLogger("SWProxy")
 
@@ -50,6 +51,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def log(self, str):
         self.ui.logWindow.addItem(str)
+
+        # After a short delay, scroll to the bottom of the window.
+        # Cannot scroll immediately due to race condition with UI update
+        threading.Timer(0.1, self.ui.logWindow.scrollToBottom).start()
 
     def startStopProxy(self):
         self.ui.proxyPort.setReadOnly(True)
