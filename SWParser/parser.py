@@ -11,7 +11,7 @@ import codecs
 from SWPlugin import SWPlugin
 from collections import OrderedDict
 from smon_decryptor import decrypt_request, decrypt_response
-from monsters import monsters_name_map
+from monsters import monsters_name_map as name_map
 
 # ref: http://stackoverflow.com/a/5838817/1020222
 class DictUnicodeWriter(object):
@@ -50,19 +50,24 @@ class DictUnicodeWriter(object):
 
 def monster_name(uid, default_unknown="???", full=True):
     uid = str(uid)
-    name_map = monsters_name_map
+    if default_unknown == "???":
+        default_unknown += "[{uid}]".format(uid=uid[:3])
 
     if uid in name_map and len(name_map[uid]) > 0:
         return name_map[uid]
     else:
+        attribute = int(uid[-1])
+        awakened = True if int(uid[-2]) else False
         if uid[0:3] in name_map and len(name_map[uid[0:3]]) > 0:
-            attribute = int(uid[-1])
-            awakened = int(uid[-2])
-            if full:
-                return "%s%s (%s)" % ("AWAKENED " if awakened else "", name_map[uid[0:3]], monster_attribute(attribute))
-            elif not awakened:
-                return name_map[uid[0:3]]
+            name = name_map[uid[:3]]
+        else:
+            name = default_unknown
+        if full:
+            return "%s%s (%s)" % ("AWAKENED " if awakened else "", name, monster_attribute(attribute))
+        elif not awakened:
+            return name
         return default_unknown
+
 
 def monster_attribute(attribute):
     name_map = {
@@ -76,7 +81,7 @@ def monster_attribute(attribute):
     if attribute in name_map:
         return name_map[attribute]
     else:
-        return attribute
+        return "???[{attr}]".format(attr=attribute)
 
 
 def rune_effect_type(id, mode=0):
