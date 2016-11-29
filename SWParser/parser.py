@@ -57,7 +57,7 @@ def monster_name(uid, default_unknown="???", full=True):
         return name_map[uid]
     else:
         attribute = int(uid[-1])
-        awakened = True if int(uid[-2]) else False
+        awakened = True if len(uid) > 1 and int(uid[-2]) else False
         if uid[0:3] in name_map and len(name_map[uid[0:3]]) > 0:
             name = name_map[uid[:3]]
         else:
