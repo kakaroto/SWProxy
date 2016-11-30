@@ -49,24 +49,25 @@ class DictUnicodeWriter(object):
 
 
 def monster_name(uid, default_unknown="???", full=True):
-    uid = str(uid)
+    uid = str(uid).ljust(5, "0")
+
     if default_unknown == "???":
-        default_unknown += "[{uid}]".format(uid=uid[:3])
+        default_unknown += "[{uid}]".format(uid=int(uid[:-2]))
 
     if uid in name_map and len(name_map[uid]) > 0:
         return name_map[uid]
+
+    awakened = True if int(uid[-2]) else False
+    if uid[:-2] in name_map and len(name_map[uid[:-2]]) > 0:
+        name = name_map[uid[:-2]]
     else:
+        name = default_unknown
+    if full:
         attribute = int(uid[-1])
-        awakened = True if int(uid[-2]) else False
-        if uid[0:3] in name_map and len(name_map[uid[0:3]]) > 0:
-            name = name_map[uid[:3]]
-        else:
-            name = default_unknown
-        if full:
-            return "%s%s (%s)" % ("AWAKENED " if awakened else "", name, monster_attribute(attribute))
-        elif not awakened:
-            return name
-        return default_unknown
+        return "%s%s (%s)" % ("AWAKENED " if awakened else "", name, monster_attribute(attribute))
+    elif not awakened:
+        return name
+    return default_unknown
 
 
 def monster_attribute(attribute):
