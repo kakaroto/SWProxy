@@ -6,6 +6,7 @@ class ParserCase(unittest.TestCase):
     def test_monster_name_full(self):
         code_map = {
             0: "???[0] (???[0])",
+            10100: "Fairy (???[0])",
             10101: "Fairy (Water)",
             10102: "Fairy (Fire)",
             10103: "Fairy (Wind)",
