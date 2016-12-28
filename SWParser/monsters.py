@@ -762,6 +762,20 @@ monsters_name_map = {
     "21214": "Tian Lang",
     "21215": "Mi Ying",
 
+    "213": "Dice Magician",
+    "21311": "Reno",
+    "21312": "Ludo",
+    "21313": "Morris",
+    "21314": "Tablo",
+    "21315": "Monte",
+
+    "214": "Harp Magician",
+    "21411": "Sonnet",
+    "21412": "Harmonia",
+    "21413": "Triana",
+    "21414": "Celia",
+    "21415": "Vivachel",
+
     "15105": "Devilmon",
     "14314": "Rainbowmon",
 
