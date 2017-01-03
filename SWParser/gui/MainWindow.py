@@ -39,7 +39,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.label)
         self.ipAddress = QtGui.QLineEdit(self.centralwidget)
         self.ipAddress.setEnabled(True)
-        self.ipAddress.setReadOnly(True)
+        self.ipAddress.setReadOnly(False)
         self.ipAddress.setObjectName(_fromUtf8("ipAddress"))
         self.horizontalLayout.addWidget(self.ipAddress)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)

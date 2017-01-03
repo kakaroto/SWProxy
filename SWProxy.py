@@ -79,7 +79,20 @@ class SWProxyCallback(object):
         return plain, json.loads(plain)
 
 
+def is_ip_port_valid(ip, port):
+    try:
+        socket.getaddrinfo(str(ip), port)
+        _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        _socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        _socket.bind((str(ip), port))
+    except:
+        raise
+    else:
+        _socket.close()
+
+
 def get_external_ip():
+
     my_ip = [[(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]][0]
     return my_ip
 
@@ -123,15 +136,21 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 
-def start_proxy_server(options):
-    my_ip = get_external_ip()
-
+def start_proxy_server(options): 
+    if options.interface:
+        my_ip = options.interface
+    else:
+        my_ip = get_external_ip()
+    
     try:
+        is_ip_port_valid(my_ip, options.port)
         print "Running Proxy server at {} on port {}".format(my_ip, options.port)
         p = HTTP(my_ip,  options.port)
         p.run()
     except KeyboardInterrupt:
         pass
+    except socket.error:
+        logger.error("IP Address and/or Port invalid - can't start Proxy")
 
 
 def parse_pcap(filename):
@@ -229,6 +248,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action="store_true", default=False)
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
     parser.add_argument('-p', '--port', type=int, default=8080)
+    parser.add_argument('-i', '--interface', type=str)
     options = parser.parse_args()
 
     # Set up logger
@@ -263,7 +283,10 @@ if __name__ == "__main__":
         app_icon.addFile(icons_path + '48x48.png', QSize(48,48))
         app_icon.addFile(icons_path + '256x256.png', QSize(256,256))
         app.setWindowIcon(app_icon)
-        win = gui.MainWindow(get_external_ip(), options.port)
+        if options.interface:
+            win = gui.MainWindow(options.interface, options.port)
+        else:
+            win = gui.MainWindow(get_external_ip(), options.port)
         logger.addHandler(gui.GuiLogHandler(win))
         win.show()
         sys.exit(app.exec_())

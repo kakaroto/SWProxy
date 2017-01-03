@@ -15,6 +15,7 @@ class ProxyThread(QtCore.QThread):
 
     def run(self):
         try:
+            SWProxy.is_ip_port_valid(self.ip, self.port)
             logger.info("Running Proxy server at %s on port %s" % (self.ip, self.port))
             p = SWProxy.HTTP(self.ip, self.port)
             p.run()
@@ -53,6 +54,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def startStopProxy(self):
         self.ui.proxyPort.setReadOnly(True)
+        self.ui.proxyPort.setEnabled(False)
+        self.ui.ipAddress.setReadOnly(True)
+        self.ui.ipAddress.setEnabled(False)
+
         if self.proxy:
             self.ui.startProxy.setText("Start Proxy Server")
             self.ui.startProxy.setEnabled(False)
@@ -65,7 +70,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def proxyStopped(self):
         self.proxy = None
+        self.ui.ipAddress.setReadOnly(False)
+        self.ui.ipAddress.setEnabled(True)
         self.ui.proxyPort.setReadOnly(False)
+        self.ui.proxyPort.setEnabled(True)
         self.ui.startProxy.setEnabled(True)
 
 
