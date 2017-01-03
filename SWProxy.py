@@ -233,7 +233,7 @@ if __name__ == "__main__":
 
     # Set up logger
     level = "DEBUG" if options.debug else "INFO"
-    logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=level, filename="proxy.log", format="%(asctime)s: %(name)s - %(levelname)s - %(message)s")
     logger.setLevel(logging.INFO)
 
     print get_usage_text()
@@ -264,6 +264,8 @@ if __name__ == "__main__":
         app_icon.addFile(icons_path + '256x256.png', QSize(256,256))
         app.setWindowIcon(app_icon)
         win = gui.MainWindow(get_external_ip(), options.port)
-        logger.addHandler(gui.GuiLogHandler(win))
+        guiLogHandler = gui.GuiLogHandler(win)
+        guiLogHandler.setFormatter(logging.Formatter(fmt="%(asctime)s %(message)s", datefmt="%X"))
+        logger.addHandler(guiLogHandler)
         win.show()
         sys.exit(app.exec_())
