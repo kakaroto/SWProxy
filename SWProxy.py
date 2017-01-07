@@ -4,6 +4,7 @@ from SWParser.smon_decryptor import decrypt_request, decrypt_response
 import json
 import logging
 import os
+import sys
 import proxy
 from SWPlugin import *
 import socket
@@ -230,6 +231,15 @@ if __name__ == "__main__":
     parser.add_argument('-g', '--no-gui', action="store_true", default=False)
     parser.add_argument('-p', '--port', type=int, default=8080)
     options = parser.parse_args()
+    
+    basepath = os.path.dirname(os.path.realpath(__file__))
+
+    # if frozen (i.e. running from pyinstaller binary)
+    # grab path from sys.executable.  Else use the path of this file
+    if getattr(sys, 'frozen', False):
+        basepath = os.path.dirname(os.path.realpath(sys.executable))
+
+    os.chdir(basepath)
 
     # Set up logger
     level = "DEBUG" if options.debug else "INFO"
