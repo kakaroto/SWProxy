@@ -208,13 +208,11 @@ def parse_pcap(filename):
                             req_json = json.loads(req_plain)
                             resp_json = json.loads(resp_plain)
 
-                            if 'command' not in resp_json:
-                                return
-
-                            try:
-                                SWPlugin.call_plugins('process_request', (req_json, resp_json))
-                            except Exception as e:
-                                logger.exception('Exception while executing plugin : {}'.format(e))
+                            if resp_json.get('command') in ['HubUserLogin', 'VisitFriend']:
+                                try:
+                                    SWPlugin.call_plugins('process_request', (req_json, resp_json))
+                                except Exception as e:
+                                    logger.exception('Exception while executing plugin : {}'.format(e))
                         except:
                             import traceback
                             e = sys.exc_info()[0]
