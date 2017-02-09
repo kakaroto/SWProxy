@@ -204,7 +204,7 @@ def parse_pcap(filename):
                        response.status == '200':
                         try:
                             req_plain = decrypt_request(request.body)
-                            resp_plain = decrypt_response(response.body)
+                            resp_plain = decrypt_response(response.body, 2)
                             req_json = json.loads(req_plain)
                             resp_json = json.loads(resp_plain)
 
