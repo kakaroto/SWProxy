@@ -200,10 +200,10 @@ def parse_pcap(filename):
 
                     if len(request) > 0 and len(response) > 0 and \
                        request.method == 'POST' and \
-                       request.uri == '/api/gateway.php' and \
+                       request.uri == '/api/gateway_c2.php' and \
                        response.status == '200':
                         try:
-                            req_plain = decrypt_request(request.body)
+                            req_plain = decrypt_request(request.body, 2)
                             resp_plain = decrypt_response(response.body, 2)
                             req_json = json.loads(req_plain)
                             resp_json = json.loads(resp_plain)
@@ -225,45 +225,48 @@ def parse_pcap(filename):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='SWParser')
-    parser.add_argument('-d', '--debug', action="store_true", default=False)
-    parser.add_argument('-g', '--no-gui', action="store_true", default=False)
-    parser.add_argument('-p', '--port', type=int, default=8080)
-    options = parser.parse_args()
-
-    # Set up logger
-    level = "DEBUG" if options.debug else "INFO"
-    logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
-    logger.setLevel(logging.INFO)
-
-    print get_usage_text()
-
-    # attempt to load gui; fallback if import error
-    if not options.no_gui:
-        try:
-            # Import here to avoid importing QT in CLI mode
-            from SWParser.gui import gui
-            from PyQt4.QtGui import QApplication, QIcon
-            from PyQt4.QtCore import QSize
-        except ImportError:
-            print "Failed to load GUI dependencies. Switching to CLI mode"
-            options.no_gui = True
-
-    if options.no_gui:
-        logger.addHandler(logging.StreamHandler())
-        start_proxy_server(options)
+    if len(sys.argv) >= 2 and sys.argv[1].endswith('.pcap'):
+        parse_pcap(sys.argv[1])
     else:
-        app = QApplication(sys.argv)
-        # set the icon
-        icons_path = os.path.join(os.getcwd(), resource_path("icons/"))
-        app_icon = QIcon()
-        app_icon.addFile(icons_path +'16x16.png', QSize(16,16))
-        app_icon.addFile(icons_path + '24x24.png', QSize(24,24))
-        app_icon.addFile(icons_path + '32x32.png', QSize(32,32))
-        app_icon.addFile(icons_path + '48x48.png', QSize(48,48))
-        app_icon.addFile(icons_path + '256x256.png', QSize(256,256))
-        app.setWindowIcon(app_icon)
-        win = gui.MainWindow(get_external_ip(), options.port)
-        logger.addHandler(gui.GuiLogHandler(win))
-        win.show()
-        sys.exit(app.exec_())
+        parser = argparse.ArgumentParser(description='SWParser')
+        parser.add_argument('-d', '--debug', action="store_true", default=False)
+        parser.add_argument('-g', '--no-gui', action="store_true", default=False)
+        parser.add_argument('-p', '--port', type=int, default=8080)
+        options = parser.parse_args()
+
+        # Set up logger
+        level = "DEBUG" if options.debug else "INFO"
+        logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+        logger.setLevel(logging.INFO)
+
+        print get_usage_text()
+
+        # attempt to load gui; fallback if import error
+        if not options.no_gui:
+            try:
+                # Import here to avoid importing QT in CLI mode
+                from SWParser.gui import gui
+                from PyQt4.QtGui import QApplication, QIcon
+                from PyQt4.QtCore import QSize
+            except ImportError:
+                print "Failed to load GUI dependencies. Switching to CLI mode"
+                options.no_gui = True
+
+        if options.no_gui:
+            logger.addHandler(logging.StreamHandler())
+            start_proxy_server(options)
+        else:
+            app = QApplication(sys.argv)
+            # set the icon
+            icons_path = os.path.join(os.getcwd(), resource_path("icons/"))
+            app_icon = QIcon()
+            app_icon.addFile(icons_path +'16x16.png', QSize(16,16))
+            app_icon.addFile(icons_path + '24x24.png', QSize(24,24))
+            app_icon.addFile(icons_path + '32x32.png', QSize(32,32))
+            app_icon.addFile(icons_path + '48x48.png', QSize(48,48))
+            app_icon.addFile(icons_path + '256x256.png', QSize(256,256))
+            app.setWindowIcon(app_icon)
+            win = gui.MainWindow(get_external_ip(), options.port)
+            logger.addHandler(gui.GuiLogHandler(win))
+            win.show()
+            sys.exit(app.exec_())
