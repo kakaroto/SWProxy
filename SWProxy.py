@@ -223,22 +223,33 @@ def parse_pcap(filename):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 2 and sys.argv[1].endswith('.pcap'):
+    parser = argparse.ArgumentParser(description='SWParser')
+    parser.add_argument('-d', '--debug', action="store_true", default=False)
+    parser.add_argument('-g', '--no-gui', action="store_true", default=False)
+    parser.add_argument('-p', '--port', type=int, default=8080)
+    options, unknown_args = parser.parse_known_args()
+
+    # Set up logger
+    level = "DEBUG" if options.debug else "INFO"
+    logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+    logger.setLevel(logging.INFO)
+
+    print get_usage_text()
+
+    # Check if a PCAP file was passed in
+    pcap_filename = None
+    for arg in unknown_args:
+        if arg.endswith('.pcap'):
+            pcap_filename = arg
+            break
+
+    if pcap_filename:
+        # Parse a PCAP file
+        print "Parsing PCAP file..."
         parse_pcap(sys.argv[1])
+        raw_input("Press Enter to exit...")
     else:
-        parser = argparse.ArgumentParser(description='SWParser')
-        parser.add_argument('-d', '--debug', action="store_true", default=False)
-        parser.add_argument('-g', '--no-gui', action="store_true", default=False)
-        parser.add_argument('-p', '--port', type=int, default=8080)
-        options = parser.parse_args()
-
-        # Set up logger
-        level = "DEBUG" if options.debug else "INFO"
-        logging.basicConfig(level=level, filename="proxy.log", format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
-        logger.setLevel(logging.INFO)
-
-        print get_usage_text()
-
+        # Run the proxy
         # attempt to load gui; fallback if import error
         if not options.no_gui:
             try:
