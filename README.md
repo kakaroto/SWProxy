@@ -38,6 +38,19 @@ You can visit friends (or people from chat, or arena rankings, etc..) and the sc
 The optimizer.json file can be directly loaded on the Rune Optimizer app available here : http://swrunes.all.my/
 Simply open the file with a text editor and copy/paste the data into the import section of the web app and press Import.
 
+## Using it on Windows:
+Windows tutorial, this worked in Windows 10 as well
+
+Note: Uninstall Python 3.* if you have it and you don't want to cause any problems with installation
+* 1. Download SWProxy source, extract it somewhere: https://github.com/kakaroto/SWProxy/archive/master.zip
+* 2. Install this: https://www.python.org/downloads/release/python-279/
+* 3. Install this: https://www.microsoft.com/en-us/download/details.aspx?id=44266
+* 4. Put this into your CMD prompt: cd "C:\Python27\Scripts\" && pip install yapsy pycrypto dpkt
+* 5. Right click the SWProxy.py file that was installed in step 1
+* 6. Open with: IDLE
+* 7. Click F5
+* 8. Success
+
 ## Using it on Linux:
 All you need to run it is the following dependencies :
 
