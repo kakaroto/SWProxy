@@ -7,6 +7,7 @@ monsters_name_map = {
     "10115": "Sorin",
 
     "102": "Imp",
+    "10201": "Imp",
     "10211": "Fynn",
     "10212": "Cogma",
     "10213": "Ralph",
@@ -14,6 +15,7 @@ monsters_name_map = {
     "10215": "Garok",
 
     "103": "Pixie",
+    "10303": "Pixie",
     "10311": "Kacey",
     "10312": "Tatu",
     "10313": "Shannon",
@@ -28,6 +30,7 @@ monsters_name_map = {
     "10415": "Kumae",
 
     "105": "Harpy",
+    "10503": "Harpy",
     "10511": "Ramira",
     "10512": "Lucasha",
     "10513": "Prilea",
@@ -35,6 +38,7 @@ monsters_name_map = {
     "10515": "Hellea",
 
     "106": "Hellhound",
+    "10605": "Hellhound",
     "10611": "Tarq",
     "10612": "Sieq",
     "10613": "Gamir",
@@ -49,6 +53,8 @@ monsters_name_map = {
     "10715": "Gorgo",
 
     "108": "Elemental",
+    "10801": "Elemental",
+    "10803": "Elemental",
     "10811": "Daharenos",
     "10812": "Bremis",
     "10813": "Taharus",
@@ -56,6 +62,7 @@ monsters_name_map = {
     "10815": "Camules",
 
     "109": "Garuda",
+    "10901": "Garuda",
     "10911": "Konamiya",
     "10912": "Cahule",
     "10913": "Lindermen",
@@ -84,6 +91,7 @@ monsters_name_map = {
     "11215": "Kamiya",
 
     "113": "Serpent",
+    "11304": "Serpent",
     "11311": "Shailoq",
     "11312": "Fao",
     "11313": "Ermeda",
@@ -112,6 +120,7 @@ monsters_name_map = {
     "11615": "Tilasha",
 
     "117": "Inferno",
+    "11705": "Inferno",
     "11711": "Purian",
     "11712": "Tagaros",
     "11713": "Anduril",
@@ -154,6 +163,7 @@ monsters_name_map = {
     "12215": "",
 
     "123": "Forest Keeper",
+    "12301": "Forest Keeper",
     "12311": "",
     "12312": "",
     "12313": "",
@@ -175,6 +185,7 @@ monsters_name_map = {
     "12515": "",
 
     "126": "Monster Flower",
+    "12603": "Monster Flower",
     "12611": "",
     "12612": "",
     "12613": "",
@@ -182,6 +193,7 @@ monsters_name_map = {
     "12615": "",
 
     "127": "Ghost",
+    "12703": "Ghost",
     "12711": "",
     "12712": "",
     "12713": "",
@@ -196,6 +208,7 @@ monsters_name_map = {
     "12815": "Havana",
 
     "129": "Mimick",
+    "12903": "Mimick",
     "12911": "",
     "12912": "",
     "12913": "",
@@ -252,6 +265,7 @@ monsters_name_map = {
     "13615": "",
 
     "137": "Bearman",
+    "13701": "Bearman",
     "13711": "Gruda",
     "13712": "Kungen",
     "13713": "Dagorr",
@@ -266,6 +280,7 @@ monsters_name_map = {
     "13815": "Trinity",
 
     "139": "Pierret",
+    "13902": "Pierret",
     "13911": "Julie",
     "13912": "Clara",
     "13913": "Sophia",
@@ -322,6 +337,7 @@ monsters_name_map = {
     "14715": "Cadiz",
 
     "148": "Viking",
+    "14805": "Viking",
     "14811": "Huga",
     "14812": "Geoffrey",
     "14813": "Walter",
@@ -385,6 +401,7 @@ monsters_name_map = {
     "15715": "Giana",
 
     "158": "Imp Champion",
+    "15802": "Imp Champion",
     "15811": "Yaku",
     "15812": "Fairo",
     "15813": "Pigma",
@@ -392,6 +409,7 @@ monsters_name_map = {
     "15815": "Loque",
 
     "159": "Mystic Witch",
+    "15903": "Mystic Witch",
     "15911": "Megan",
     "15912": "Rebecca",
     "15913": "Silia",
@@ -399,6 +417,7 @@ monsters_name_map = {
     "15915": "Gina",
 
     "160": "Grim Reaper",
+    "16001": "Grim Reaper",
     "16011": "Hemos",
     "16012": "Sath",
     "16013": "Hiva",
@@ -427,6 +446,7 @@ monsters_name_map = {
     "16315": "Grego",
 
     "164": "Skull Soldier",
+    "16403": "Skull Soldier",
     "16411": "",
     "16412": "",
     "16413": "",
@@ -434,6 +454,7 @@ monsters_name_map = {
     "16415": "",
 
     "165": "Living Armor",
+    "16502": "Living Armor",
     "16511": "Nickel",
     "16512": "Iron",
     "16513": "Copper",
@@ -497,6 +518,7 @@ monsters_name_map = {
     "17415": "Rahul",
 
     "175": "Mischievous Bat",
+    "17501": "Mischievous Bat",
     "17511": "",
     "17512": "",
     "17513": "",
@@ -504,6 +526,7 @@ monsters_name_map = {
     "17515": "",
 
     "176": "Battle Scorpion",
+    "17603": "Battle Scorpion",
     "17611": "",
     "17612": "",
     "17613": "",
@@ -511,6 +534,7 @@ monsters_name_map = {
     "17615": "",
 
     "177": "Minotauros",
+    "17703": "Minotauros",
     "17711": "Urtau",
     "17712": "Burentau",
     "17713": "Eintau",
@@ -518,6 +542,7 @@ monsters_name_map = {
     "17715": "Kamatau",
 
     "178": "Lizardman",
+    "17803": "Lizardman",
     "17811": "Kernodon",
     "17812": "Igmanodon",
     "17813": "Velfinodon",
@@ -581,6 +606,7 @@ monsters_name_map = {
     "18615": "Woonsa",
 
     "187": "Penguin Knight",
+    "18702": "Penguin Knight",
     "18711": "Toma",
     "18712": "Naki",
     "18713": "Mav",
@@ -658,6 +684,7 @@ monsters_name_map = {
     "19715": "Manannan",
 
     "198": "Magic Knight",
+    "19803": "Magic Knight",
     "19811": "Lapis",
     "19812": "Astar",
     "19813": "Lupinus",
@@ -665,6 +692,8 @@ monsters_name_map = {
     "19815": "Lanett",
 
     "199": "Assassin",
+    "19901": "Assassin",
+    "19903": "Assassin",
     "19911": "Stella",
     "19912": "Lexy",
     "19913": "Tanya",
@@ -672,6 +701,7 @@ monsters_name_map = {
     "19915": "Isabelle",
 
     "200": "Neostone Fighter",
+    "20002": "Neostone Fighter",
     "20011": "Ryan",
     "20012": "Trevor",
     "20013": "Logan",
@@ -686,6 +716,7 @@ monsters_name_map = {
     "20115": "Sylvia",
 
     "202": "Martial Artist",
+    "20203": "Martial Artist",
     "20211": "Luan",
     "20212": "Sin",
     "20213": "Lo",
@@ -714,6 +745,7 @@ monsters_name_map = {
     "20515": "Nephthys",
 
     "206": "Horus",
+    "20602": "Horus",
     "20611": "Qebehsenuef",
     "20612": "Duamutef",
     "20613": "Imesety",
@@ -728,6 +760,7 @@ monsters_name_map = {
     "20715": "Dusky",
 
     "208": "Frankenstein",
+    "20803": "Frankenstein",
     "20811": "Tractor",
     "20812": "Bulldozer",
     "20813": "Crane",
@@ -735,6 +768,7 @@ monsters_name_map = {
     "20815": "Crawler",
 
     "209": "Elven Ranger",
+    "20903": "Elven Ranger",
     "20911": "Eluin",
     "20912": "Adrian",
     "20913": "Erwin",
