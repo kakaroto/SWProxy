@@ -17,6 +17,8 @@ VERSION = "0.100"
 GITHUB = 'https://github.com/kakaroto/SWProxy'
 logger = logging.getLogger("SWProxy")
 
+gatewayUrls = set()
+
 class HTTP(proxy.TCP):
     """
     HTTP proxy server implementation.
@@ -37,7 +39,7 @@ class SWProxyCallback(object):
 
     def onRequest(self, proxy, host, port, request):
         try:
-            if request.url.path.startswith('/api/gateway'):
+            if request.url.geturl() in gatewayUrls or (len(gatewayUrls) == 0 and request.url.path.startswith('/api/location')):
                 self.request = request  # if we care about this api call, store request for decryption later
         except AttributeError:
             pass
@@ -49,13 +51,20 @@ class SWProxyCallback(object):
             return
 
         try:
-            req_plain, req_json = self._parse_request(self.request)
             resp_plain, resp_json = self._parse_response(response)
+
+            if 'server_url_list' in resp_json:
+                gatewayUrls.clear()
+                for serverEntry in resp_json['server_url_list']:
+                    gatewayUrls.add(serverEntry['gateway'])
+                gatewayUrls.add(self.request.url.geturl())
 
             if 'command' not in resp_json:
                 # we only want apis that are commands
                 self.request = None
                 return
+
+            req_plain, req_json = self._parse_request(self.request)
 
             try:
                 SWPlugin.call_plugins('process_request', (req_json, resp_json))
