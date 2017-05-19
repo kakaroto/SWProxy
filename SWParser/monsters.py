@@ -776,20 +776,6 @@ monsters_name_map = {
     "21414": "Celia",
     "21415": "Vivachel",
 
-    "215": "Unicorn",
-    "21511": "Amelia",
-    "21512": "Helena",
-    "21513": "Diana",
-    "21514": "Eleanor",
-    "21515": "Alexandra",
-
-    "216": "Unicorn (Human Form)",
-    "21611": "Amelia",
-    "21612": "Helena",
-    "21613": "Diana",
-    "21614": "Eleanor",
-    "21615": "Alexandra",
-
     "15105": "Devilmon",
     "14314": "Rainbowmon",
 
